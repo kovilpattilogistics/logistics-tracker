@@ -1391,7 +1391,8 @@ select.form-control {
         // ============================================
         
         // Configuration - YOUR ACTUAL SCRIPT ID
-        const SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbwE20aW_OpevdeYSXoe4ASX7A8wJ--cYmUi92Zyici4_sCZm4mFMbI_dYaNpFBuysir/exec';
+        const SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbx7D9CNoZxyjbY4iQzXXY8X3c9VFp0REPIBfIX4FwyymskiRlM5ZhS-xEqTQV0tZy7F/exec';
+        const CUSTOMER_PORTAL_URL = 'https://script.google.com/macros/s/AKfycbx7D9CNoZxyjbY4iQzXXY8X3c9VFp0REPIBfIX4FwyymskiRlM5ZhS-xEqTQV0tZy7F/exec'
         let isOnline = navigator.onLine;
         let syncQueue = JSON.parse(localStorage.getItem('sync_queue') || '[]');
         
@@ -1415,7 +1416,8 @@ select.form-control {
                     used_deliveries: 15,
                     remaining: 5,
                     status: 'Active',
-                    join_date: '2025-10-01'
+                    join_date: '2025-10-01',
+                    portalUsername: 'ravi_stores'
                 },
                 {
                     id: 'CUST002',
@@ -1430,7 +1432,8 @@ select.form-control {
                     used_deliveries: 35,
                     remaining: 5,
                     status: 'Active',
-                    join_date: '2025-10-01'
+                    join_date: '2025-10-01',
+                    portalUsername: 'hotel_saravana'
                 },
                 {
                     id: 'CUST003',
@@ -1445,7 +1448,8 @@ select.form-control {
                     used_deliveries: 32,
                     remaining: 8,
                     status: 'Active',
-                    join_date: '2025-10-05'
+                    join_date: '2025-10-05',
+                    portalUsername: 'krishna_mahal'
                 },
                 {
                     id: 'CUST004',
@@ -1460,7 +1464,8 @@ select.form-control {
                     used_deliveries: 18,
                     remaining: 2,
                     status: 'Near Limit',
-                    join_date: '2025-10-08'
+                    join_date: '2025-10-08',
+                    portalUsername: 'murugan_construction'
                 },
                 {
                     id: 'CUST005',
@@ -1475,7 +1480,8 @@ select.form-control {
                     used_deliveries: 3,
                     remaining: 0,
                     status: 'Active',
-                    join_date: '2025-10-10'
+                    join_date: '2025-10-10',
+                    portalUsername: 'lakshmi_grocery'
                 }
             ],
             
@@ -2029,6 +2035,93 @@ select.form-control {
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             document.querySelector('.nav-item:last-child').classList.add('active');
         }
+
+        // ============================================
+// CUSTOMER PORTAL HELPER FUNCTIONS
+// ============================================
+
+function copyPortalCredentials(customerName, username) {
+    const message = `🚚 *Kovilpatti Logistics - Customer Portal*
+
+Dear ${customerName},
+
+Welcome to our customer portal! Track and schedule deliveries online.
+
+*Login Details:*
+🔗 Portal: ${CUSTOMER_PORTAL_URL}
+👤 Username: ${username}
+🔐 Password: [Contact admin for password]
+
+*Features:*
+✅ View delivery plan
+✅ Schedule deliveries
+✅ Track status
+✅ View history
+
+Support: 9876543210
+
+*Kovilpatti Logistics*`;
+
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(message).then(() => {
+            showMessage('WhatsApp message copied!', 'success');
+        }).catch(() => {
+            fallbackCopyTextToClipboard(message);
+        });
+    } else {
+        fallbackCopyTextToClipboard(message);
+    }
+}
+
+function fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        showMessage('Message copied!', 'success');
+    } catch (err) {
+        showMessage('Failed to copy', 'error');
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+function validatePassword(password) {
+    if (password.length < 8) return { valid: false, message: 'Password must be at least 8 characters' };
+    if (password.length > 20) return { valid: false, message: 'Password must be 20 characters or less' };
+    if (password.indexOf(' ') !== -1) return { valid: false, message: 'Password cannot contain spaces' };
+    if (!/[a-zA-Z]/.test(password)) return { valid: false, message: 'Password must contain at least one letter' };
+    if (!/[0-9]/.test(password)) return { valid: false, message: 'Password must contain at least one number' };
+    if (!/[@#$%^&*!_\-=+]/.test(password)) return { valid: false, message: 'Password must contain a special character' };
+    return { valid: true, message: 'Valid password' };
+}
+
+function generateUsername(businessName) {
+    return businessName.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '').substring(0, 20);
+}
+
+function generateTemporaryPassword() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+    const specials = '@#$!';
+    let password = '';
+    password += chars.charAt(Math.floor(Math.random() * 26));
+    password += chars.charAt(Math.floor(Math.random() * 26) + 26);
+    password += chars.charAt(Math.floor(Math.random() * 10) + 52);
+    password += specials.charAt(Math.floor(Math.random() * specials.length));
+    for (let i = 0; i < 4; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password.split('').sort(() => Math.random() - 0.5).join('');
+}
+
+// End of Customer Portal Helper Functions
+
+
         
         // ============================================
         // CUSTOMER RENDERING
@@ -2069,6 +2162,38 @@ select.form-control {
                             `<div><strong>This Month:</strong> ${customer.used_deliveries} deliveries</div>`
                         }
                         <div><strong>Joined:</strong> ${new Date(customer.join_date).toLocaleDateString()}</div>
+                        ${customer.portalUsername ? `
+        <div style="margin-top: var(--space-12); padding-top: var(--space-12); border-top: 1px solid var(--color-border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-8);">
+                <strong style="color: var(--color-primary);">🔐 Portal Access</strong>
+                <span class="status status--success" style="font-size: var(--font-size-xs);">Active</span>
+            </div>
+            <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                <div style="margin-bottom: var(--space-4);">
+                    <strong>Username:</strong> <code style="background: var(--color-secondary); padding: 2px 6px; border-radius: 3px;">${customer.portalUsername}</code>
+                </div>
+                <div style="margin-bottom: var(--space-8);">
+                    <strong>Portal:</strong> 
+                    <a href="${CUSTOMER_PORTAL_URL}" target="_blank" style="font-size: var(--font-size-xs); color: var(--color-primary);">
+                        Open Portal ↗
+                    </a>
+                </div>
+                <button 
+                    onclick="copyPortalCredentials('${customer.name}', '${customer.portalUsername}')" 
+                    class="btn btn--sm btn--outline"
+                    style="width: 100%; margin-top: var(--space-4); font-size: var(--font-size-sm);"
+                >
+                    📋 Copy WhatsApp Message
+                </button>
+            </div>
+        </div>
+    ` : `
+        <div style="margin-top: var(--space-12); padding-top: var(--space-12); border-top: 1px solid var(--color-border); color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+            <em>⚠️ Portal access not set up</em>
+        </div>
+    `}
+`;
+
                     </div>
                 `;
                 
