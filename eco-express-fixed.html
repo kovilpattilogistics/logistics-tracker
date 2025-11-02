@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco Express Logistics</title>
+    
+    <!-- Load Google API first -->
+    <script src="https://apis.google.com/js/api.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding-bottom: 70px;
+        }
+
+        .top-header {
+            background: #21808D;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .app-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.connected {
+            background: #10b981;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .content {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #13343B;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #13343B;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #21808D;
+            box-shadow: 0 0 0 3px rgba(33, 128, 141, 0.1);
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: #626C7C;
+            margin-top: 5px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #21808D;
+            color: white;
+        }
+
+        .btn-primary:active {
+            background: #1d7078;
+            transform: scale(0.98);
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #13343B;
+            margin-top: 10px;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+
+        .alert-warning {
+            background: #fff7ed;
+            color: #9a3412;
+            border: 1px solid #fb923c;
+        }
+
+        .status-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .status-label {
+            font-size: 14px;
+            color: #626C7C;
+        }
+
+        .status-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-value.connected {
+            color: #10b981;
+        }
+
+        .status-value.disconnected {
+            color: #ef4444;
+        }
+
+        .instructions {
+            background: #fff7ed;
+            border: 1px solid #fb923c;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .instructions-title {
+            font-weight: 600;
+            color: #9a3412;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            font-size: 13px;
+            color: #7c2d12;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #21808D;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        .debug-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .debug-log {
+            background: #f9fafb;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .debug-log div {
+            margin-bottom: 5px;
+            padding: 3px;
+        }
+
+        .debug-log .error {
+            color: #ef4444;
+        }
+
+        .debug-log .success {
+            color: #10b981;
+        }
+
+        .debug-log .info {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-header">
+        <div class="app-title">⚡ Eco Express</div>
+        <div class="sync-status">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Not Connected</span>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- Configuration Screen -->
+        <div id="configScreen">
+            <div class="card">
+                <h2 class="card-title">⚙️ Configuration</h2>
+
+                <div class="status-section">
+                    <span class="status-label">Connection Status:</span>
+                    <span class="status-value disconnected" id="connectionStatus">Not Connected</span>
+                </div>
+
+                <div class="instructions">
+                    <div class="instructions-title">📋 Setup Instructions:</div>
+                    <ol>
+                        <li>Get your <strong>Google OAuth Client ID</strong> from Google Cloud Console</li>
+                        <li>Get your <strong>Spreadsheet ID</strong> from your Google Sheet URL</li>
+                        <li>Paste both below and click "Save & Connect"</li>
+                        <li>Click "Authorize" when Google asks for permission</li>
+                    </ol>
+                </div>
+
+                <div id="alertArea"></div>
+
+                <form id="configForm">
+                    <div class="form-group">
+                        <label for="clientId">Google OAuth Client ID *</label>
+                        <textarea 
+                            id="clientId" 
+                            rows="3"
+                            placeholder="123456789-abc123def456.apps.googleusercontent.com"
+                            required
+                        ></textarea>
+                        <div class="input-hint">
+                            From: Google Cloud Console → APIs & Services → Credentials
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="spreadsheetId">Google Spreadsheet ID *</label>
+                        <input 
+                            type="text" 
+                            id="spreadsheetId" 
+                            placeholder="1a2B3c4D5e6F7g8H9i0J1k2L3m4N5o6P7q8R9s0T1u2"
+                            required
+                        />
+                        <div class="input-hint">
+                            From: Your Google Sheet URL (between /d/ and /edit)
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary" id="saveBtn">
+                        💾 Save Configuration
+                    </button>
+
+                    <button type="button" class="btn btn-secondary" id="authorizeBtn" disabled>
+                        🔐 Authorize Google Access
+                    </button>
+
+                    <button type="button" class="btn btn-secondary" id="testBtn">
+                        🧪 Test Connection
+                    </button>
+                </form>
+
+                <div class="debug-section">
+                    <h3 style="font-size: 14px; margin-bottom: 10px;">Debug Log:</h3>
+                    <div class="debug-log" id="debugLog"></div>
+                </div>
+
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e5e5;">
+                    <h3 style="font-size: 16px; margin-bottom: 15px; color: #13343B;">
+                        📚 Where to find these IDs?
+                    </h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <strong style="color: #21808D;">Client ID:</strong>
+                        <div class="code-block">
+                            console.cloud.google.com → APIs & Services → Credentials
+                        </div>
+                    </div>
+
+                    <div>
+                        <strong style="color: #21808D;">Spreadsheet ID:</strong>
+                        <div class="code-block">
+                            docs.google.com/spreadsheets/d/<span style="color: #fbbf24;">[THIS_IS_THE_ID]</span>/edit
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Screen -->
+        <div id="successScreen" class="hidden">
+            <div class="card">
+                <h2 class="card-title">✅ Connected Successfully!</h2>
+                
+                <div class="alert alert-success">
+                    Your app is now connected to Google Sheets and ready to use!
+                </div>
+
+                <div style="text-align: center; padding: 40px 0;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">🚚</div>
+                    <h3>Ready to Track Deliveries!</h3>
+                    <p style="color: #626C7C; margin-top: 10px;">
+                        The full tracking interface will be available in the complete version.
+                    </p>
+                </div>
+
+                <button type="button" class="btn btn-secondary" onclick="location.reload()">
+                    ⚙️ Reconfigure
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Debug logging
+        function debugLog(message, type = 'info') {
+            const log = document.getElementById('debugLog');
+            const entry = document.createElement('div');
+            entry.className = type;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+            console.log(`[${type}] ${message}`);
+        }
+
+        // Configuration object
+        let config = {
+            clientId: '',
+            spreadsheetId: '',
+            isConnected: false
+        };
+
+        // UI Elements
+        const clientIdInput = document.getElementById('clientId');
+        const spreadsheetIdInput = document.getElementById('spreadsheetId');
+        const saveBtn = document.getElementById('saveBtn');
+        const authorizeBtn = document.getElementById('authorizeBtn');
+        const testBtn = document.getElementById('testBtn');
+        const alertArea = document.getElementById('alertArea');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const configScreen = document.getElementById('configScreen');
+        const successScreen = document.getElementById('successScreen');
+
+        // Show alert
+        function showAlert(message, type = 'info') {
+            alertArea.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            debugLog(message, type === 'error' ? 'error' : type === 'success' ? 'success' : 'info');
+        }
+
+        // Update status
+        function updateStatus(connected, text) {
+            if (connected) {
+                statusDot.classList.add('connected');
+                statusText.textContent = text;
+                connectionStatus.textContent = 'Connected ✅';
+                connectionStatus.classList.remove('disconnected');
+                connectionStatus.classList.add('connected');
+            } else {
+                statusDot.classList.remove('connected');
+                statusText.textContent = text;
+                connectionStatus.textContent = 'Not Connected ❌';
+                connectionStatus.classList.remove('connected');
+                connectionStatus.classList.add('disconnected');
+            }
+        }
+
+        // Load saved configuration
+        function loadConfig() {
+            debugLog('Loading saved configuration...');
+            const saved = localStorage.getItem('ecoExpressConfig');
+            if (saved) {
+                try {
+                    config = JSON.parse(saved);
+                    clientIdInput.value = config.clientId || '';
+                    spreadsheetIdInput.value = config.spreadsheetId || '';
+                    
+                    if (config.clientId && config.spreadsheetId) {
+                        authorizeBtn.disabled = false;
+                        debugLog('Configuration loaded from storage', 'success');
+                    }
+                    
+                    if (config.isConnected) {
+                        showSuccess();
+                    }
+                } catch (e) {
+                    debugLog('Error loading config: ' + e.message, 'error');
+                }
+            }
+        }
+
+        // Save configuration
+        saveBtn.addEventListener('click', function() {
+            const clientId = clientIdInput.value.trim();
+            const spreadsheetId = spreadsheetIdInput.value.trim();
+
+            // Validate
+            if (!clientId || !spreadsheetId) {
+                showAlert('Please fill in both fields', 'error');
+                return;
+            }
+
+            if (!clientId.includes('.apps.googleusercontent.com')) {
+                showAlert('Invalid Client ID format. Should end with .apps.googleusercontent.com', 'error');
+                return;
+            }
+
+            if (spreadsheetId.length < 20) {
+                showAlert('Spreadsheet ID seems too short. Please check.', 'warning');
+                return;
+            }
+
+            // Save
+            config.clientId = clientId;
+            config.spreadsheetId = spreadsheetId;
+            localStorage.setItem('ecoExpressConfig', JSON.stringify(config));
+
+            showAlert('✅ Configuration saved! Now click "Authorize Google Access" to connect.', 'success');
+            authorizeBtn.disabled = false;
+            debugLog('Configuration saved successfully', 'success');
+        });
+
+        // Test connection
+        testBtn.addEventListener('click', async function() {
+            const clientId = clientIdInput.value.trim();
+            const spreadsheetId = spreadsheetIdInput.value.trim();
+
+            if (!clientId || !spreadsheetId) {
+                showAlert('Please fill in both fields first', 'error');
+                return;
+            }
+
+            showAlert('Testing configuration format...', 'info');
+            debugLog('Testing configuration...');
+
+            // Basic validation
+            let errors = [];
+            
+            if (!clientId.includes('.apps.googleusercontent.com')) {
+                errors.push('Client ID format incorrect');
+            }
+            
+            if (spreadsheetId.length < 20) {
+                errors.push('Spreadsheet ID seems too short');
+            }
+            
+            if (clientId.includes('YOUR_CLIENT_ID') || spreadsheetId.includes('YOUR_SPREADSHEET_ID')) {
+                errors.push('Please replace placeholder values with actual IDs');
+            }
+
+            if (errors.length > 0) {
+                showAlert('⚠️ Issues found: ' + errors.join(', '), 'error');
+                debugLog('Validation errors: ' + errors.join(', '), 'error');
+            } else {
+                showAlert('✅ Configuration format looks good! Click "Save Configuration" to proceed.', 'success');
+                debugLog('Configuration format validated', 'success');
+            }
+        });
+
+        // Authorize with Google
+        authorizeBtn.addEventListener('click', async function() {
+            if (!config.clientId || !config.spreadsheetId) {
+                showAlert('Please save configuration first', 'error');
+                return;
+            }
+
+            authorizeBtn.disabled = true;
+            showAlert('Loading Google API...', 'info');
+            debugLog('Starting Google API initialization...');
+
+            try {
+                // Check if gapi is loaded
+                if (typeof gapi === 'undefined') {
+                    throw new Error('Google API not loaded. Please refresh the page.');
+                }
+
+                debugLog('Google API loaded, initializing client...');
+
+                // Load the auth2 library
+                await new Promise((resolve, reject) => {
+                    gapi.load('client:auth2', {
+                        callback: resolve,
+                        onerror: reject
+                    });
+                });
+
+                debugLog('Auth2 library loaded, initializing with credentials...');
+
+                // Initialize the client
+                await gapi.client.init({
+                    clientId: config.clientId,
+                    discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
+                    scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file'
+                });
+
+                debugLog('Client initialized, checking sign-in status...');
+
+                // Check if already signed in
+                const auth = gapi.auth2.getAuthInstance();
+                if (auth.isSignedIn.get()) {
+                    debugLog('Already signed in!', 'success');
+                    onAuthSuccess();
+                } else {
+                    debugLog('Not signed in, showing sign-in popup...');
+                    showAlert('Please sign in with Google when popup appears...', 'info');
+                    
+                    // Sign in
+                    await auth.signIn();
+                    debugLog('Sign-in successful!', 'success');
+                    onAuthSuccess();
+                }
+
+            } catch (error) {
+                debugLog('Authorization error: ' + error.message, 'error');
+                showAlert('❌ Authorization failed: ' + error.message, 'error');
+                authorizeBtn.disabled = false;
+                
+                // Additional help based on error
+                if (error.message.includes('popup')) {
+                    showAlert('💡 Tip: Make sure popups are allowed for this site', 'warning');
+                } else if (error.message.includes('redirect_uri_mismatch')) {
+                    showAlert('💡 Tip: Check that your redirect URI in Google Cloud matches your app URL', 'warning');
+                }
+            }
+        });
+
+        // On successful authorization
+        function onAuthSuccess() {
+            debugLog('Authorization successful, testing sheet access...', 'success');
+            showAlert('✅ Authorization successful! Testing sheet access...', 'success');
+            updateStatus(true, 'Connected');
+
+            // Test read access
+            testSheetAccess();
+        }
+
+        // Test sheet access
+        async function testSheetAccess() {
+            try {
+                debugLog('Attempting to read from sheet...');
+                
+                const response = await gapi.client.sheets.spreadsheets.get({
+                    spreadsheetId: config.spreadsheetId
+                });
+
+                debugLog('Sheet access successful! Sheet title: ' + response.result.properties.title, 'success');
+                showAlert('✅ Successfully connected to: ' + response.result.properties.title, 'success');
+
+                // Mark as connected
+                config.isConnected = true;
+                localStorage.setItem('ecoExpressConfig', JSON.stringify(config));
+
+                // Show success screen
+                setTimeout(showSuccess, 1500);
+
+            } catch (error) {
+                debugLog('Sheet access error: ' + error.message, 'error');
+                showAlert('⚠️ Connected to Google, but cannot access sheet: ' + error.message, 'error');
+                
+                if (error.message.includes('404')) {
+                    showAlert('💡 Tip: Check that your Spreadsheet ID is correct', 'warning');
+                } else if (error.message.includes('403')) {
+                    showAlert('💡 Tip: Make sure the sheet is shared with "Anyone with link" as Editor', 'warning');
+                }
+            }
+        }
+
+        // Show success screen
+        function showSuccess() {
+            configScreen.classList.add('hidden');
+            successScreen.classList.remove('hidden');
+            updateStatus(true, 'Connected');
+        }
+
+        // Initialize on page load
+        debugLog('Page loaded, initializing...');
+        loadConfig();
+        debugLog('Initialization complete. Ready for configuration.');
+    </script>
+</body>
+</html>
