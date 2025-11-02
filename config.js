@@ -21,7 +21,7 @@ const CONFIG = {
   // Your Google OAuth 2.0 Client ID
   // Example: "123456789-abc123def456.apps.googleusercontent.com"
   // Get this from: Google Cloud Console → APIs & Services → Credentials
-  GOOGLE_CLIENT_ID: "YOUR_CLIENT_ID_HERE",
+  GOOGLE_CLIENT_ID: "804353330014-4sf3nusl9go935in3kq8ro00j76125ed.apps.googleusercontent.com",
   
   
   // ==========================================
@@ -31,7 +31,7 @@ const CONFIG = {
   // Your Google Spreadsheet ID
   // Example: "1a2B3c4D5e6F7g8H9i0J1k2L3m4N5o6P7q8R9s0T1u2"
   // Get this from: The URL of your Google Sheet (between /d/ and /edit)
-  SPREADSHEET_ID: "YOUR_SPREADSHEET_ID_HERE",
+  SPREADSHEET_ID: "1u_pePFoCdMlFGIFlfT9cP2vD8XCHJ1P4lBogOVqr84w",
   
   
   // ==========================================
