@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Eco Express - Logistics Tracking System</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+  <!-- Mobile Header -->
+  <header class="mobile-header">
+    <div class="logo-small">
+      <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+        <rect x="4" y="12" width="24" height="12" rx="2" fill="#21808D"/>
+        <rect x="8" y="8" width="16" height="6" rx="1" fill="#21808D"/>
+        <circle cx="10" cy="26" r="2" fill="#13343B"/>
+        <circle cx="22" cy="26" r="2" fill="#13343B"/>
+      </svg>
+      <span>Eco Express</span>
+    </div>
+    <div class="header-actions">
+      <div class="sync-indicator" id="syncIndicator"></div>
+      <button class="icon-button" id="settingsBtn" aria-label="Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 1v6m0 6v6m5.656-15.656l-4.242 4.242m-2.828 2.828l-4.242 4.242M23 12h-6m-6 0H1m15.656 5.656l-4.242-4.242m-2.828-2.828l-4.242-4.242"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="app-container">
+
+    <!-- Main Content -->
+    <main class="mobile-content" id="mainContent">
+      <!-- Dashboard Page -->
+      <div class="page active" id="dashboardPage">
+        <div class="page-header-mobile">
+          <h1 class="page-title-mobile">Today's Overview</h1>
+          <p class="page-subtitle-mobile" id="currentDate"></p>
+        </div>
+        
+        <div class="metrics-grid">
+          <div class="metric-card" style="background: var(--color-bg-1);">
+            <div class="metric-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#21808D" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <div class="metric-content">
+              <div class="metric-value" id="completedTrips">8</div>
+              <div class="metric-label">trips completed today</div>
+            </div>
+          </div>
+
+          <div class="metric-card" style="background: var(--color-bg-2);">
+            <div class="metric-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#21808D" stroke-width="2">
+                <circle cx="12" cy="10" r="3"/>
+                <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/>
+              </svg>
+            </div>
+            <div class="metric-content">
+              <div class="metric-value" id="distanceTraveled">47.5 km</div>
+              <div class="metric-label">total distance today</div>
+            </div>
+          </div>
+
+          <div class="metric-card" style="background: var(--color-bg-3);">
+            <div class="metric-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#21808D" stroke-width="2">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+            </div>
+            <div class="metric-content">
+              <div class="metric-value" id="revenueEarned">₹1,800</div>
+              <div class="metric-label">revenue today</div>
+            </div>
+          </div>
+
+          <div class="metric-card" style="background: var(--color-bg-4);">
+            <div class="metric-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#21808D" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <div class="metric-content">
+              <div class="metric-value" id="customersServed">12</div>
+              <div class="metric-label">customers today</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="battery-status-card">
+          <h2>Battery Status</h2>
+          <div class="battery-info">
+            <div class="battery-visual">
+              <div class="battery-icon">
+                <div class="battery-level" id="batteryLevel" style="width: 78%;"></div>
+              </div>
+              <div class="battery-percentage" id="batteryPercentage">78%</div>
+            </div>
+            <div class="battery-details">
+              <div class="battery-stat">
+                <span class="stat-label">Current Range:</span>
+                <span class="stat-value" id="currentRange">120 km remaining</span>
+              </div>
+              <div class="battery-stat">
+                <span class="stat-label">Last Charged:</span>
+                <span class="stat-value" id="lastCharged">2 hours ago</span>
+              </div>
+              <div class="battery-stat">
+                <span class="stat-label">Energy Consumed Today:</span>
+                <span class="stat-value" id="energyConsumed">4.2 kWh</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-actions">
+          <button class="btn btn--primary btn--lg" id="startNewTripBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="16"></line>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+            Start New Trip
+          </button>
+          <button class="btn btn--outline btn--lg" id="logChargingBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 18H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3.19M15 6h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-3.19"></path>
+              <line x1="23" y1="13" x2="23" y2="11"></line>
+              <polyline points="11 6 7 12 13 12 9 18"></polyline>
+            </svg>
+            Log Charging Session
+          </button>
+        </div>
+
+        <div class="recent-activity-card">
+          <h2>Recent Activity</h2>
+          <div class="activity-timeline" id="activityTimeline">
+            <div class="activity-item">
+              <div class="activity-time">10:30 AM</div>
+              <div class="activity-icon success">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="activity-text">Delivery completed to Ramesh Vegetables</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-time">09:15 AM</div>
+              <div class="activity-icon info">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 11 12 14 22 4"></polyline>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
+              </div>
+              <div class="activity-text">Trip started from hub</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-time">08:45 AM</div>
+              <div class="activity-icon info">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <div class="activity-text">New customer added: Kumar Retail Store</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedule Page -->
+      <div class="page" id="schedulePage">
+        <div class="page-header-mobile">
+          <h1 class="page-title-mobile">Scheduled Trips</h1>
+          <p class="page-subtitle-mobile" id="scheduleDate"></p>
+        </div>
+
+
+
+        <div class="trips-list" id="tripsList">
+          <!-- Trips will be dynamically added here -->
+        </div>
+      </div>
+
+      <!-- Customers Page -->
+      <div class="page" id="customersPage">
+        <div class="page-header-mobile">
+          <h1 class="page-title-mobile">Customers</h1>
+          <p class="page-subtitle-mobile" id="customerCount">Loading...</p>
+        </div>
+
+        <div class="search-bar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input type="text" class="form-control" id="customerSearch" placeholder="Search customers..." />
+        </div>
+
+        <div id="customersMobile" class="customers-mobile"></div>
+        
+        <div class="customers-table-container" style="display: none;">
+          <table class="customers-table" id="customersTable">
+            <thead>
+              <tr>
+                <th>Customer ID</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Total Trips</th>
+                <th>Last Delivery</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customersTableBody">
+              <!-- Customers will be dynamically added here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Delivery Log Page -->
+      <div class="page" id="deliveryPage">
+        <div class="page-header-mobile">
+          <h1 class="page-title-mobile">Active Delivery</h1>
+        </div>
+        
+        <div id="activeTripSection" class="hidden">
+          <!-- Active trip content will be dynamically added -->
+        </div>
+
+        <div id="newDeliverySection">
+          <div class="new-delivery-card">
+            <h2>Start New Delivery</h2>
+            <form id="newDeliveryForm" class="delivery-form">
+              <div class="form-group">
+                <label class="form-label">Select Customer *</label>
+                <select class="form-control" id="deliveryCustomer" required>
+                  <option value="">Choose a customer...</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Pickup Location *</label>
+                  <div class="location-input-group">
+                    <input type="text" class="form-control" id="deliveryPickupLocation" required />
+                    <button type="button" class="btn btn--secondary" id="pickupMapBtn">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="10" r="3"/>
+                        <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/>
+                      </svg>
+                      Map
+                    </button>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Delivery Location *</label>
+                  <div class="location-input-group">
+                    <input type="text" class="form-control" id="deliveryDeliveryLocation" required />
+                    <button type="button" class="btn btn--secondary" id="deliveryMapBtn">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="10" r="3"/>
+                        <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/>
+                      </svg>
+                      Map
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Expected Distance (km) *</label>
+                  <input type="number" class="form-control" id="deliveryDistance" step="0.1" required />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Cargo Weight (kg) *</label>
+                  <input type="number" class="form-control" id="deliveryWeight" max="750" required />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Delivery Type</label>
+                <select class="form-control" id="deliveryType">
+                  <option>Standard</option>
+                  <option>Express</option>
+                  <option>Fragile</option>
+                  <option>Heavy</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Special Instructions</label>
+                <textarea class="form-control" id="deliveryInstructions" rows="3"></textarea>
+              </div>
+
+              <button type="submit" class="btn btn--primary btn--lg btn--full-width">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                Start Trip
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Page -->
+      <div class="page" id="settingsPage">
+        <div class="page-header-mobile">
+          <h1 class="page-title-mobile">Settings</h1>
+          <p class="page-subtitle-mobile">Manage your preferences</p>
+        </div>
+        
+        <div class="settings-grid">
+          <div class="settings-card">
+            <h2>Sync Settings</h2>
+            <div class="settings-section">
+              <div class="setting-item">
+                <label class="setting-label">Google Sheets Connection</label>
+                <div class="status status--success">Connected</div>
+              </div>
+              <div class="setting-item">
+                <label class="setting-label">Spreadsheet ID</label>
+                <div class="setting-value">••••••••••••••••••••••</div>
+              </div>
+              <div class="setting-item">
+                <label class="setting-label">Last Sync</label>
+                <div class="setting-value" id="lastSyncTime">Just now</div>
+              </div>
+              <div class="setting-item">
+                <label class="setting-label">Auto-sync</label>
+                <label class="toggle">
+                  <input type="checkbox" id="autoSyncToggle" checked />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <button class="btn btn--primary" id="forceSyncBtn">Force Sync Now</button>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h2>Vehicle Settings</h2>
+            <div class="settings-section">
+              <div class="setting-item">
+                <label class="setting-label">Registration Number</label>
+                <div class="setting-value">TN01AB1234</div>
+              </div>
+              <div class="setting-item">
+                <label class="setting-label">Current Odometer</label>
+                <input type="number" class="form-control" id="currentOdometer" value="12450" />
+              </div>
+              <div class="setting-item">
+                <label class="setting-label">Battery Capacity</label>
+                <div class="setting-value">14.4 kWh</div>
+              </div>
+              <div class="setting-item">
+                <label class="setting-label">Max Payload</label>
+                <div class="setting-value">750 kg</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h2>Rate Settings</h2>
+            <div class="settings-section">
+              <div class="setting-item">
+                <label class="setting-label">Electricity Cost per kWh</label>
+                <input type="number" class="form-control" id="electricityCost" value="8.5" step="0.1" />
+              </div>
+              <div class="setting-item">
+                <label class="setting-label">Default Delivery Rate</label>
+                <input type="number" class="form-control" id="deliveryRate" value="150" />
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h2>App Settings</h2>
+            <div class="settings-section">
+              <div class="setting-item">
+                <label class="setting-label">Theme</label>
+                <select class="form-control" id="themeSelect">
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                  <option value="auto">Auto</option>
+                </select>
+              </div>
+              <div class="setting-item">
+                <label class="setting-label">GPS Auto-capture</label>
+                <label class="toggle">
+                  <input type="checkbox" id="gpsAutoToggle" checked />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <h2>Data Management</h2>
+          <div class="settings-section">
+            <div class="button-group">
+              <button class="btn btn--outline" id="exportDataBtn">Export All Data</button>
+              <button class="btn btn--outline" id="importDataBtn">Import Data</button>
+              <button class="btn btn--outline" id="backupDataBtn">Backup Data</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Bottom Tab Navigation -->
+  <nav class="bottom-tabs">
+    <button class="tab-button active" data-page="dashboard" aria-label="Home">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      <span>Home</span>
+    </button>
+    <button class="tab-button" data-page="schedule" aria-label="Schedule">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+      <span>Schedule</span>
+    </button>
+    <button class="tab-button" data-page="customers" aria-label="Customers">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+      </svg>
+      <span>Customers</span>
+    </button>
+    <button class="tab-button" data-page="delivery" aria-label="Delivery">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+      </svg>
+      <span>Delivery</span>
+    </button>
+  </nav>
+
+  <!-- FAB for adding items -->
+  <button class="fab hidden" id="fab" aria-label="Add">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="16"></line>
+      <line x1="8" y1="12" x2="16" y2="12"></line>
+    </svg>
+  </button>
+
+  <!-- Map Modal -->
+  <div class="modal" id="mapModal">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h2>Select Location</h2>
+        <button class="modal-close" id="mapModalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="map-search">
+          <input type="text" class="form-control" id="mapSearch" placeholder="Search location..." />
+          <button class="btn btn--secondary" id="useCurrentLocationBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="10" r="3"/>
+              <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z"/>
+            </svg>
+            Use Current Location
+          </button>
+        </div>
+        <div id="map" style="height: 400px; margin-top: 16px;"></div>
+        <div class="map-coordinates" id="mapCoordinates">Click on map to select location</div>
+        <div class="form-group">
+          <label class="form-label">Location Description</label>
+          <input type="text" class="form-control" id="locationDescription" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn--outline" id="mapModalCancel">Cancel</button>
+        <button class="btn btn--primary" id="confirmLocationBtn">Confirm Location</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Trip Modal -->
+  <div class="modal" id="addTripModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add New Trip</h2>
+        <button class="modal-close" id="addTripModalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="addTripForm">
+          <div class="form-group">
+            <label class="form-label">Customer *</label>
+            <select class="form-control" id="tripCustomer" required>
+              <option value="">Choose a customer...</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Scheduled Time *</label>
+              <input type="time" class="form-control" id="tripTime" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Order Type *</label>
+              <select class="form-control" id="tripOrderType" required>
+                <option>Delivery</option>
+                <option>Pickup</option>
+                <option>Mixed</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Pickup Location *</label>
+            <input type="text" class="form-control" id="tripPickup" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Delivery Location *</label>
+            <input type="text" class="form-control" id="tripDelivery" required />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Expected Distance (km)</label>
+              <input type="number" class="form-control" id="tripDistance" step="0.1" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Expected Weight (kg)</label>
+              <input type="number" class="form-control" id="tripWeight" max="750" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Delivery Type</label>
+            <select class="form-control" id="tripDeliveryType">
+              <option>Standard</option>
+              <option>Express</option>
+              <option>Fragile</option>
+              <option>Heavy</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Special Notes</label>
+            <textarea class="form-control" id="tripNotes" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn--outline" id="addTripModalCancel">Cancel</button>
+        <button class="btn btn--primary" id="saveTripBtn">Save Trip</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Customer Modal -->
+  <div class="modal" id="addCustomerModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add New Customer</h2>
+        <button class="modal-close" id="addCustomerModalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="addCustomerForm">
+          <div class="form-group">
+            <label class="form-label">Customer Name *</label>
+            <input type="text" class="form-control" id="customerName" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Phone Number *</label>
+            <input type="tel" class="form-control" id="customerPhone" pattern="[0-9]{10}" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Address Line 1 *</label>
+            <input type="text" class="form-control" id="customerAddress1" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Address Line 2</label>
+            <input type="text" class="form-control" id="customerAddress2" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">City *</label>
+              <input type="text" class="form-control" id="customerCity" value="Kovilpatti" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">PIN Code *</label>
+              <input type="text" class="form-control" id="customerPincode" pattern="[0-9]{6}" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Landmark</label>
+            <input type="text" class="form-control" id="customerLandmark" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Customer Type</label>
+            <select class="form-control" id="customerType">
+              <option>Individual</option>
+              <option>Business</option>
+              <option>Retail</option>
+              <option>Wholesale</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Special Instructions</label>
+            <textarea class="form-control" id="customerInstructions" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn--outline" id="addCustomerModalCancel">Cancel</button>
+        <button class="btn btn--primary" id="saveCustomerBtn">Save Customer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notifications -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
