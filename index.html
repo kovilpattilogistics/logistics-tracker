@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#21808D">
+    <title>Eco Express - Logistics Tracking</title>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; width: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; color: #333; overflow: hidden; }
+        .app-container { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+
+        /* Header */
+        .app-header { background: linear-gradient(135deg, #21808D 0%, #1a6470 100%); color: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); flex-shrink: 0; }
+        .header-title { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #4caf50; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* Loading Overlay */
+        .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+        .loading-overlay.hidden { display: none; }
+        .spinner { width: 50px; height: 50px; border: 4px solid #e0e0e0; border-top: 4px solid #21808D; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-text { margin-top: 15px; font-size: 14px; color: #666; text-align: center; }
+        .loading-error { margin-top: 15px; font-size: 12px; color: #f44336; background: #ffebee; padding: 12px; border-radius: 6px; max-width: 400px; line-height: 1.4; }
+        .debug-info { margin-top: 12px; font-size: 11px; color: #999; font-family: monospace; background: #f0f0f0; padding: 10px; border-radius: 6px; max-width: 400px; overflow-x: auto; }
+
+        /* Content */
+        .content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 70px; }
+        .tab-content { display: none; padding: 0; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Cards */
+        .card { background: white; border-radius: 12px; margin: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .card-title { font-size: 14px; font-weight: 600; color: #21808D; margin-bottom: 12px; text-transform: uppercase; }
+
+        /* Dashboard */
+        .battery-circle { width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(#4caf50 0deg, #4caf50 288deg, #e0e0e0 288deg); display: flex; align-items: center; justify-content: center; margin: 20px auto; box-shadow: 0 2px 8px rgba(0,0,0,0.12); font-weight: 600; font-size: 28px; color: #21808D; }
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 12px; }
+        .metric-card { background: white; border-radius: 10px; padding: 14px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .metric-value { font-size: 22px; font-weight: 600; color: #21808D; }
+        .metric-label { font-size: 11px; color: #999; margin-top: 4px; text-transform: uppercase; }
+
+        /* Lists */
+        .list-item { background: white; border-radius: 10px; margin: 10px 12px; padding: 14px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .item-info h4 { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 4px; }
+        .item-info p { font-size: 12px; color: #999; margin-bottom: 2px; }
+        .item-actions { display: flex; gap: 8px; }
+        .btn-icon { background: none; border: none; font-size: 20px; cursor: pointer; padding: 8px; }
+
+        /* Buttons */
+        .btn { padding: 14px 20px; border: none; border-radius: 10px; cursor: pointer; font-size: 15px; font-weight: 600; width: 100%; margin: 10px 0; }
+        .btn-primary { background: #21808D; color: white; }
+        .btn-primary:active { background: #1a6470; transform: scale(0.98); }
+        .btn-secondary { background: #f0f0f0; color: #333; }
+
+        /* Forms */
+        .form-group { margin: 14px 12px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; font-family: inherit; background: white; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #21808D; box-shadow: 0 0 0 3px rgba(33, 128, 141, 0.1); }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: flex-end; z-index: 2000; }
+        .modal-overlay.hidden { display: none; }
+        .modal-content { background: white; width: 100%; max-height: 90vh; border-radius: 20px 20px 0 0; padding: 20px; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-size: 16px; font-weight: 600; color: #21808D; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #999; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e0e0e0; display: grid; grid-template-columns: repeat(4, 1fr); z-index: 1000; box-shadow: 0 -2px 8px rgba(0,0,0,0.08); }
+        .nav-item { padding: 12px 10px; text-align: center; cursor: pointer; font-size: 10px; color: #999; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: #21808D; font-weight: 600; }
+        .nav-icon { font-size: 22px; }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 40px 20px; color: #999; }
+        .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+
+        /* Toast */
+        .toast { position: fixed; bottom: 90px; left: 12px; right: 12px; padding: 12px 16px; background: #333; color: white; border-radius: 8px; z-index: 1500; font-size: 13px; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .toast.success { background: #4caf50; }
+        .toast.error { background: #f44336; }
+
+        .search-box { margin: 12px; padding: 10px 14px; background: white; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; width: calc(100% - 24px); }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; background: #e8f5e9; color: #2e7d32; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Loading Screen -->
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="spinner"></div>
+            <p class="loading-text" id="loadingText">Connecting to your data...</p>
+            <div id="errorMessage" class="loading-error" style="display: none;"></div>
+            <div id="debugInfo" class="debug-info" style="display: none;"></div>
+        </div>
+
+        <!-- Header -->
+        <div class="app-header">
+            <div class="header-title">
+                <span>⚡ Eco Express</span>
+                <span class="status-dot" id="statusDot"></span>
+            </div>
+            <div style="font-size: 12px;" id="lastSync">Just now</div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Dashboard -->
+            <div id="dashboardTab" class="tab-content active">
+                <div class="battery-circle" id="batteryValue">78%</div>
+                <div class="card">
+                    <div class="card-title">Today's Overview</div>
+                    <div class="metrics-grid">
+                        <div class="metric-card"><div class="metric-value" id="tripsToday">0</div><div class="metric-label">Trips</div></div>
+                        <div class="metric-card"><div class="metric-value" id="distanceToday">0 km</div><div class="metric-label">Distance</div></div>
+                        <div class="metric-card"><div class="metric-value" id="revenueToday">₹0</div><div class="metric-label">Revenue</div></div>
+                        <div class="metric-card"><div class="metric-value" id="customersToday">0</div><div class="metric-label">Customers</div></div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="showTab('delivery'); loadCustomersForDropdown()">🚚 Start New Trip</button>
+                <button class="btn btn-secondary" onclick="showTab('customers')">👥 View Customers</button>
+            </div>
+
+            <!-- Customers -->
+            <div id="customersTab" class="tab-content">
+                <input type="text" id="customerSearch" class="search-box" placeholder="Search customers...">
+                <div id="customersList"></div>
+            </div>
+
+            <!-- Schedule -->
+            <div id="scheduleTab" class="tab-content">
+                <input type="date" id="tripDate" style="width: calc(100% - 24px); margin: 12px; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                <div id="tripsList"></div>
+            </div>
+
+            <!-- Delivery -->
+            <div id="deliveryTab" class="tab-content">
+                <div class="card">
+                    <div class="card-title">Create Delivery</div>
+                    <div class="form-group">
+                        <label>Select Customer *</label>
+                        <select id="deliveryCustomer" required><option value="">-- Choose --</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Pickup Location</label>
+                        <input type="text" id="pickupLocation" placeholder="Main Hub">
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery Location</label>
+                        <input type="text" id="deliveryLocation" placeholder="e.g., Market Street">
+                    </div>
+                    <div class="form-group">
+                        <label>Expected Distance (km)</label>
+                        <input type="number" id="expectedDistance" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>Weight (kg)</label>
+                        <input type="number" id="weight" step="0.1">
+                    </div>
+                    <button class="btn btn-primary" onclick="startDelivery()">Start Delivery</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Nav -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="showTab('dashboard')"><div class="nav-icon">🏠</div><div>Dashboard</div></div>
+            <div class="nav-item" onclick="showTab('schedule')"><div class="nav-icon">📅</div><div>Schedule</div></div>
+            <div class="nav-item" onclick="showTab('customers')"><div class="nav-icon">👥</div><div>Customers</div></div>
+            <div class="nav-item" onclick="showTab('delivery')"><div class="nav-icon">🚚</div><div>Delivery</div></div>
+        </div>
+
+        <!-- Add Customer Modal -->
+        <div id="addCustomerModal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Add New Customer</div>
+                    <button class="modal-close" onclick="hideModal('addCustomerModal')">✕</button>
+                </div>
+                <form onsubmit="submitAddCustomer(event)">
+                    <div class="form-group"><label>Name *</label><input type="text" id="formName" required></div>
+                    <div class="form-group"><label>Phone *</label><input type="tel" id="formPhone" required></div>
+                    <div class="form-group"><label>Address</label><input type="text" id="formAddress"></div>
+                    <div class="form-group"><label>City</label><input type="text" id="formCity" value="Kovilpatti"></div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const APPS_SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+
+        const appState = {
+            customers: [],
+            trips: [],
+            dashboard: {},
+            currentTab: 'dashboard'
+        };
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', initApp);
+
+        async function initApp() {
+            showLoadingWithDebug('Checking configuration...');
+
+            // Check URL
+            if (APPS_SCRIPT_URL === 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') {
+                showError('❌ Apps Script URL not configured', 'Edit line 476 and paste your Apps Script URL (from Google Sheets → Extensions → Apps Script → Deploy)');
+                return;
+            }
+
+            showLoadingWithDebug('Verifying URL format...');
+
+            if (!APPS_SCRIPT_URL.includes('script.google.com')) {
+                showError('❌ Invalid URL', 'URL must contain "script.google.com"');
+                return;
+            }
+
+            if (!APPS_SCRIPT_URL.endsWith('/exec')) {
+                showError('❌ Incomplete URL', 'URL must end with "/exec"');
+                return;
+            }
+
+            showLoadingWithDebug('Testing API connection...');
+
+            try {
+                const result = await callAPI('test');
+
+                if (!result.success) {
+                    throw new Error(result.error || 'API returned error');
+                }
+
+                showLoadingWithDebug('Loading data from Google Sheets...');
+
+                await Promise.all([
+                    loadDashboard(),
+                    loadCustomers(),
+                    loadTrips()
+                ]);
+
+                hideLoading();
+                showToast('✅ Connected!', 'success');
+
+            } catch (error) {
+                showError('❌ Connection Failed', error.message + '\n\nDebug: Check browser console (F12)');
+                console.error('Full error:', error);
+            }
+        }
+
+        async function callAPI(action, params = {}) {
+            const url = new URL(APPS_SCRIPT_URL);
+            url.searchParams.append('action', action);
+            Object.keys(params).forEach(key => {
+                if (params[key] !== null && params[key] !== undefined) {
+                    url.searchParams.append(key, params[key]);
+                }
+            });
+
+            console.log('API Call:', action, url.toString());
+
+            const response = await fetch(url.toString());
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+
+            const data = await response.json();
+            console.log('API Response:', data);
+
+            if (!data.success) throw new Error(data.error || 'API error');
+
+            return data;
+        }
+
+        async function loadDashboard() {
+            const result = await callAPI('getDashboard');
+            appState.dashboard = result.data;
+            document.getElementById('tripsToday').textContent = result.data.todays_trips?.value || 0;
+            document.getElementById('distanceToday').textContent = (result.data.todays_distance_km?.value || 0) + ' km';
+            document.getElementById('revenueToday').textContent = '₹' + (result.data.todays_revenue_?.value || 0);
+            document.getElementById('customersToday').textContent = result.data.customers_today?.value || 0;
+            document.getElementById('batteryValue').textContent = (result.data.battery_soc_?.value || 78) + '%';
+        }
+
+        async function loadCustomers() {
+            const result = await callAPI('getCustomers');
+            appState.customers = result.data || [];
+            renderCustomers();
+            updateCustomerDropdowns();
+        }
+
+        async function loadTrips() {
+            const result = await callAPI('getTrips');
+            appState.trips = result.data || [];
+            renderTrips();
+        }
+
+        function renderCustomers() {
+            const list = document.getElementById('customersList');
+            const search = (document.getElementById('customerSearch').value || '').toLowerCase();
+            const filtered = appState.customers.filter(c => c.name.toLowerCase().includes(search) || c.phone.includes(search));
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><p>No customers found</p></div>';
+                return;
+            }
+
+            list.innerHTML = filtered.map(c => `
+                <div class="list-item">
+                    <div class="item-info">
+                        <h4>${c.name}</h4>
+                        <p>📞 ${c.phone}</p>
+                        <p>${c.address} • ${c.city}</p>
+                    </div>
+                    <div class="item-actions">
+                        <a href="tel:${c.phone}" class="btn-icon">📞</a>
+                        <button class="btn-icon" onclick="deleteCustomer('${c.id}', '${c.name}')">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderTrips() {
+            const list = document.getElementById('tripsList');
+            const date = document.getElementById('tripDate').value || formatDate(new Date());
+            const filtered = appState.trips.filter(t => t.date === date);
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No trips</p></div>';
+                return;
+            }
+
+            list.innerHTML = filtered.map(t => `
+                <div class="list-item">
+                    <div class="item-info">
+                        <h4>${t.customers}</h4>
+                        <p>${t.time_started} | ${t.total_distance} km | ₹${t.revenue}</p>
+                        <span class="badge">${t.trip_status}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function submitAddCustomer(e) {
+            e.preventDefault();
+            showLoading('Adding customer...');
+            try {
+                await callAPI('addCustomer', {
+                    name: document.getElementById('formName').value,
+                    phone: document.getElementById('formPhone').value,
+                    address: document.getElementById('formAddress').value,
+                    city: document.getElementById('formCity').value
+                });
+                showToast('✅ Added!', 'success');
+                hideModal('addCustomerModal');
+                document.querySelector('form').reset();
+                await loadCustomers();
+            } catch (error) {
+                showToast('❌ ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function deleteCustomer(id, name) {
+            if (!confirm(`Delete ${name}?`)) return;
+            try {
+                await callAPI('deleteCustomer', { customer_id: id });
+                showToast('✅ Deleted', 'success');
+                await loadCustomers();
+            } catch (error) {
+                showToast('❌ Error', 'error');
+            }
+        }
+
+        async function startDelivery() {
+            const customerId = document.getElementById('deliveryCustomer').value;
+            if (!customerId) {
+                showToast('❌ Select customer', 'error');
+                return;
+            }
+            const customer = appState.customers.find(c => c.id === customerId);
+            showLoading('Starting...');
+            try {
+                await callAPI('addTrip', {
+                    customer_id: customerId,
+                    customers: customer.name,
+                    customer_count: 1,
+                    pickup_location: document.getElementById('pickupLocation').value,
+                    delivery_location: document.getElementById('deliveryLocation').value
+                });
+                showToast('✅ Trip started!', 'success');
+                await loadTrips();
+            } catch (error) {
+                showToast('❌ ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function showTab(name) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(name + 'Tab')?.classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            event.target.closest('.nav-item')?.classList.add('active');
+        }
+
+        function showModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function hideModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function showLoading(text) {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        }
+
+        function showLoadingWithDebug(text) {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('debugInfo').textContent = 'URL: ' + (APPS_SCRIPT_URL.substring(0, 50) + '...');
+            document.getElementById('debugInfo').style.display = 'block';
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
+        function showError(title, message) {
+            document.getElementById('loadingText').textContent = title;
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function updateCustomerDropdowns() {
+            const dropdown = document.getElementById('deliveryCustomer');
+            dropdown.innerHTML = '<option value="">-- Choose --</option>' + 
+                appState.customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        }
+
+        function loadCustomersForDropdown() {
+            updateCustomerDropdowns();
+        }
+
+        // Event listeners
+        document.getElementById('customerSearch')?.addEventListener('input', renderCustomers);
+        document.getElementById('tripDate')?.addEventListener('change', renderTrips);
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('tripDate').value = formatDate(new Date());
+        });
+    </script>
+</body>
+</html>
