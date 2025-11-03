@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#21808D">
+    <title>Eco Express Logistics</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; width: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; color: #333; }
+        .app-container { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+
+        /* HEADER */
+        .app-header { 
+            background: linear-gradient(135deg, #21808D 0%, #1a6470 100%);
+            color: white;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .header-title { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #4caf50; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* LOADING */
+        .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+        .loading-overlay.hidden { display: none; }
+        .spinner { width: 50px; height: 50px; border: 4px solid #e0e0e0; border-top: 4px solid #21808D; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-text { margin-top: 15px; font-size: 14px; color: #666; text-align: center; }
+        .loading-error { margin-top: 15px; font-size: 12px; color: #f44336; background: #ffebee; padding: 12px; border-radius: 6px; max-width: 400px; line-height: 1.5; }
+
+        /* CONTENT */
+        .content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 70px; }
+        .tab-content { display: none; padding: 0; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* CARDS & SECTIONS */
+        .section { padding: 0; margin: 0; }
+        .section-title { background: #f0f0f0; padding: 12px 16px; font-weight: 600; color: #21808D; font-size: 13px; text-transform: uppercase; }
+        .card { background: white; border-radius: 8px; margin: 10px 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .metric-box { background: white; border-radius: 8px; padding: 14px; text-align: center; border: 1px solid #e0e0e0; }
+        .metric-value { font-size: 24px; font-weight: 600; color: #21808D; }
+        .metric-label { font-size: 11px; color: #999; margin-top: 4px; text-transform: uppercase; }
+
+        /* LISTS */
+        .list-item { background: white; border-radius: 8px; margin: 10px 12px; padding: 12px; border-left: 4px solid #21808D; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: flex-start; }
+        .item-info { flex: 1; }
+        .item-info h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .item-info p { font-size: 12px; color: #999; margin-bottom: 3px; }
+        .item-info .status-badge { display: inline-block; padding: 3px 8px; background: #e8f5e9; color: #2e7d32; border-radius: 4px; font-size: 10px; font-weight: 600; }
+        .item-actions { display: flex; gap: 8px; }
+        .btn-icon { background: none; border: none; font-size: 18px; cursor: pointer; padding: 8px; }
+
+        /* BUTTONS */
+        .btn { padding: 12px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; width: calc(100% - 24px); margin: 10px 12px; }
+        .btn-primary { background: #21808D; color: white; }
+        .btn-primary:active { background: #1a6470; transform: scale(0.98); }
+        .btn-secondary { background: #f0f0f0; color: #333; }
+        .btn-danger { background: #f44336; color: white; }
+        .btn-success { background: #4caf50; color: white; }
+
+        /* FORMS */
+        .form-group { margin: 12px 12px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: #333; margin-bottom: 6px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; font-family: inherit; background: white; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #21808D; box-shadow: 0 0 0 3px rgba(33, 128, 141, 0.1); }
+        .form-error { color: #f44336; font-size: 12px; margin-top: 4px; }
+
+        /* MODAL */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: flex-end; z-index: 2000; }
+        .modal-overlay.hidden { display: none; }
+        .modal-content { background: white; width: 100%; max-height: 90vh; border-radius: 16px 16px 0 0; padding: 20px; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-size: 16px; font-weight: 600; color: #21808D; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #999; }
+
+        /* SEARCH */
+        .search-box { margin: 12px; padding: 10px 14px; background: white; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; width: calc(100% - 24px); }
+
+        /* TOAST */
+        .toast { position: fixed; bottom: 90px; left: 12px; right: 12px; padding: 12px 16px; background: #333; color: white; border-radius: 8px; z-index: 1500; font-size: 13px; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .toast.success { background: #4caf50; }
+        .toast.error { background: #f44336; }
+        .toast.warning { background: #ff9800; }
+
+        /* EMPTY STATE */
+        .empty-state { text-align: center; padding: 40px 20px; color: #999; }
+        .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+
+        /* BOTTOM NAV */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e0e0e0; display: grid; grid-template-columns: repeat(4, 1fr); z-index: 1000; box-shadow: 0 -2px 8px rgba(0,0,0,0.08); }
+        .nav-item { padding: 10px 8px; text-align: center; cursor: pointer; font-size: 10px; color: #999; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: #21808D; font-weight: 600; }
+        .nav-icon { font-size: 20px; }
+
+        /* RATING */
+        .rating { display: flex; gap: 4px; justify-content: center; margin: 8px 0; }
+        .star { font-size: 20px; cursor: pointer; }
+        .star.filled { color: #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- LOADING OVERLAY -->
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="spinner"></div>
+            <p class="loading-text" id="loadingText">Connecting to your data...</p>
+            <div id="errorMessage" class="loading-error" style="display: none;"></div>
+        </div>
+
+        <!-- HEADER -->
+        <div class="app-header">
+            <div class="header-title">
+                <span>⚡ Eco Express</span>
+                <span class="status-dot" id="statusDot"></span>
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+            <!-- DASHBOARD TAB -->
+            <div id="dashboardTab" class="tab-content active">
+                <div style="padding: 16px;">
+                    <div style="text-align: center; margin-bottom: 16px;">
+                        <div style="font-size: 13px; color: #999; margin-bottom: 8px;">TODAY'S OVERVIEW</div>
+                        <div style="font-size: 28px; font-weight: 600; color: #21808D;" id="todayDate"></div>
+                    </div>
+                </div>
+
+                <div class="metric-grid" style="margin: 0 12px;">
+                    <div class="metric-box">
+                        <div class="metric-value" id="metricTrips">0</div>
+                        <div class="metric-label">Completed Trips</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-value" id="metricDistance">0 km</div>
+                        <div class="metric-label">Distance</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-value" id="metricRevenue">₹0</div>
+                        <div class="metric-label">Revenue</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-value" id="metricCustomers">0</div>
+                        <div class="metric-label">Customers</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="switchTab('schedule')">📅 View Schedule</button>
+                <button class="btn btn-secondary" onclick="switchTab('customers')">👥 Manage Customers</button>
+            </div>
+
+            <!-- SCHEDULE TAB -->
+            <div id="scheduleTab" class="tab-content">
+                <div class="section-title">Today's Schedule</div>
+                <div style="padding: 12px;">
+                    <input type="date" id="scheduleDate" class="search-box" style="width: calc(100% - 0px); margin: 0;">
+                </div>
+                <button class="btn btn-primary" style="margin-top: 0;" onclick="openAddTripForm()">+ ADD NEW TRIP</button>
+                <div id="tripsList"></div>
+            </div>
+
+            <!-- CUSTOMERS TAB -->
+            <div id="customersTab" class="tab-content">
+                <div class="section-title">All Customers</div>
+                <input type="text" id="customerSearch" class="search-box" placeholder="Search by name or phone...">
+                <button class="btn btn-primary" onclick="openAddCustomerForm()">+ ADD NEW CUSTOMER</button>
+                <div id="customersList"></div>
+            </div>
+
+            <!-- DELIVERY LOG TAB -->
+            <div id="deliveryTab" class="tab-content">
+                <div id="deliveryFormSection" style="display: block;">
+                    <div class="section-title">Start New Delivery</div>
+                    <div class="card">
+                        <div class="form-group">
+                            <label>Customer *</label>
+                            <select id="deliveryCustomer" required>
+                                <option value="">-- Select Customer --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Pickup Location *</label>
+                            <input type="text" id="pickupLocation" placeholder="e.g., Main Hub" value="Main Hub" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Pickup Description</label>
+                            <input type="text" id="pickupDesc" placeholder="e.g., Gate on left side">
+                        </div>
+                        <div class="form-group">
+                            <label>Delivery Location *</label>
+                            <input type="text" id="deliveryLocation" placeholder="e.g., Market Street" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Delivery Description</label>
+                            <input type="text" id="deliveryDesc" placeholder="e.g., Main entrance">
+                        </div>
+                        <div class="form-group">
+                            <label>Expected Distance (km) *</label>
+                            <input type="number" id="expectedDistance" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Weight (kg)</label>
+                            <input type="number" id="weight" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Delivery Type *</label>
+                            <select id="deliveryType" required>
+                                <option value="Standard">Standard</option>
+                                <option value="Express">Express</option>
+                                <option value="Bulk">Bulk</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success" onclick="startDelivery()">START DELIVERY</button>
+                    </div>
+                </div>
+
+                <div id="ongoingDeliverySection" style="display: none;">
+                    <div class="section-title">Ongoing Delivery</div>
+                    <div class="card">
+                        <div style="margin-bottom: 12px;">
+                            <div style="font-size: 12px; color: #999;">CUSTOMER</div>
+                            <div style="font-size: 16px; font-weight: 600;" id="ongoingCustomer"></div>
+                            <div style="font-size: 12px; color: #999; margin-top: 4px;">
+                                📞 <a href="" id="ongoingCall" style="color: #21808D; text-decoration: none;">[Call]</a> |
+                                💬 <a href="" id="ongoingWhatsapp" style="color: #21808D; text-decoration: none;">[WhatsApp]</a>
+                            </div>
+                        </div>
+
+                        <div style="border-top: 1px solid #e0e0e0; padding-top: 12px; margin-top: 12px;">
+                            <div style="font-size: 12px; color: #999; margin-bottom: 8px; text-transform: uppercase;">Quick Messages</div>
+                            <button class="btn btn-secondary" style="margin: 4px 0; font-size: 12px; padding: 10px;" onclick="sendMessage('trip_started', 'Trip Started ✓')">Trip Started ✓</button>
+                            <button class="btn btn-secondary" style="margin: 4px 0; font-size: 12px; padding: 10px;" onclick="sendMessage('on_way', 'Pickup On Way 🚗')">Pickup On Way 🚗</button>
+                            <button class="btn btn-secondary" style="margin: 4px 0; font-size: 12px; padding: 10px;" onclick="sendMessage('arriving', 'Arriving Soon ⏱️')">Arriving Soon ⏱️</button>
+                        </div>
+
+                        <div style="border-top: 1px solid #e0e0e0; padding-top: 12px; margin-top: 12px;">
+                            <div style="font-size: 12px; color: #999; margin-bottom: 8px; text-transform: uppercase;">Delivery Details</div>
+                            
+                            <div class="form-group">
+                                <label>Proof Photo *</label>
+                                <button class="btn btn-secondary" id="capturePhotoBtn" onclick="capturePhoto()">📷 CAPTURE PHOTO</button>
+                                <div id="photoPreview" style="margin-top: 8px;"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Recipient Name *</label>
+                                <input type="text" id="recipientName" placeholder="Who received it?">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Rating</label>
+                                <div class="rating" id="ratingStars"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Delivery Status</label>
+                                <select id="deliveryStatus">
+                                    <option value="Completed">✓ Completed</option>
+                                    <option value="Failed">✗ Failed/Couldn't Deliver</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Notes</label>
+                                <textarea id="deliveryNotes" placeholder="Any special notes..." style="min-height: 80px;"></textarea>
+                            </div>
+
+                            <button class="btn btn-success" onclick="completeDelivery()">COMPLETE DELIVERY</button>
+                            <button class="btn btn-secondary" onclick="cancelDelivery()">CANCEL</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAVIGATION -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('dashboard')">
+                <div class="nav-icon">🏠</div>
+                <div>Dashboard</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('schedule')">
+                <div class="nav-icon">📅</div>
+                <div>Schedule</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('customers')">
+                <div class="nav-icon">👥</div>
+                <div>Customers</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('delivery')">
+                <div class="nav-icon">🚚</div>
+                <div>Delivery</div>
+            </div>
+        </div>
+
+        <!-- ADD CUSTOMER MODAL -->
+        <div id="addCustomerModal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Add New Customer</div>
+                    <button class="modal-close" onclick="closeModal('addCustomerModal')">✕</button>
+                </div>
+                <form onsubmit="submitAddCustomer(event)">
+                    <div class="form-group">
+                        <label>Name *</label>
+                        <input type="text" id="formName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone *</label>
+                        <input type="tel" id="formPhone" placeholder="10 digits" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Address *</label>
+                        <input type="text" id="formAddress" required>
+                    </div>
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" id="formCity" value="Kovilpatti">
+                    </div>
+                    <div class="form-group">
+                        <label>Landmark</label>
+                        <input type="text" id="formLandmark">
+                    </div>
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="formType">
+                            <option value="B2C">Retail (B2C)</option>
+                            <option value="B2B">Business (B2B)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">SAVE CUSTOMER</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ADD TRIP MODAL -->
+        <div id="addTripModal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Create New Trip</div>
+                    <button class="modal-close" onclick="closeModal('addTripModal')">✕</button>
+                </div>
+                <form onsubmit="submitAddTrip(event)">
+                    <div class="form-group">
+                        <label>Trip Date *</label>
+                        <input type="date" id="tripDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Customer *</label>
+                        <select id="tripCustomer" required>
+                            <option value="">-- Select Customer --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Pickup Location *</label>
+                        <input type="text" id="tripPickup" value="Main Hub" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery Location *</label>
+                        <input type="text" id="tripDelivery" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Expected Distance (km)</label>
+                        <input type="number" id="tripDistance" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery Type</label>
+                        <select id="tripType">
+                            <option value="Standard">Standard</option>
+                            <option value="Express">Express</option>
+                            <option value="Bulk">Bulk</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">CREATE TRIP</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION - PASTE YOUR APPS SCRIPT URL HERE
+        // ============================================
+        const APPS_SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+        // Format: https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec
+
+        // ============================================
+        // APP STATE
+        // ============================================
+        const appState = {
+            customers: [],
+            trips: [],
+            deliveries: [],
+            dashboard: {},
+            currentDelivery: null,
+            photoData: null,
+            currentRating: 5
+        };
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        window.addEventListener('DOMContentLoaded', initApp);
+
+        async function initApp() {
+            showLoading('Checking configuration...');
+
+            // VALIDATE CONFIGURATION
+            if (APPS_SCRIPT_URL === 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') {
+                showError('❌ Configuration Error', 'Please edit line 490 and paste your Apps Script URL');
+                return;
+            }
+
+            if (!APPS_SCRIPT_URL.includes('script.google.com')) {
+                showError('❌ Invalid URL', 'URL must contain "script.google.com"');
+                return;
+            }
+
+            if (!APPS_SCRIPT_URL.endsWith('/exec')) {
+                showError('❌ Incomplete URL', 'URL must end with "/exec"');
+                return;
+            }
+
+            showLoading('Testing API connection...');
+
+            try {
+                const result = await callAPI('test');
+                if (!result.success) throw new Error(result.error);
+
+                showLoading('Loading data...');
+                
+                // INITIAL DATA LOAD
+                await Promise.all([
+                    loadDashboard(),
+                    loadCustomers(),
+                    loadTrips(),
+                    loadDeliveries()
+                ]);
+
+                // SETUP UI
+                setupUI();
+                
+                hideLoading();
+                showToast('✅ Connected!', 'success');
+
+                // AUTO-REFRESH EVERY 5 SECONDS
+                setInterval(autoRefresh, 5000);
+
+            } catch (error) {
+                showError('❌ Connection Failed', error.message);
+                console.error('Init error:', error);
+            }
+        }
+
+        async function callAPI(action, params = {}) {
+            const url = new URL(APPS_SCRIPT_URL);
+            url.searchParams.append('action', action);
+            
+            Object.entries(params).forEach(([key, value]) => {
+                if (value !== null && value !== undefined) {
+                    url.searchParams.append(key, String(value));
+                }
+            });
+
+            console.log('API Call:', action, url.toString());
+
+            try {
+                const response = await fetch(url.toString(), {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const data = await response.json();
+                console.log('API Response:', data);
+
+                if (!data.success) {
+                    throw new Error(data.error || 'API returned error');
+                }
+
+                return data;
+
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        // ============================================
+        // DATA LOADING FUNCTIONS
+        // ============================================
+
+        async function loadDashboard() {
+            try {
+                const result = await callAPI('getDashboard');
+                appState.dashboard = result.data;
+                updateDashboardUI();
+            } catch (error) {
+                console.error('Dashboard error:', error);
+            }
+        }
+
+        async function loadCustomers() {
+            try {
+                const result = await callAPI('getCustomers');
+                appState.customers = result.data || [];
+                console.log('Customers loaded:', appState.customers.length);
+                updateCustomerUI();
+                updateCustomerDropdowns();
+            } catch (error) {
+                console.error('Customers error:', error);
+            }
+        }
+
+        async function loadTrips() {
+            try {
+                const result = await callAPI('getTrips');
+                appState.trips = result.data || [];
+                console.log('Trips loaded:', appState.trips.length);
+                updateTripsUI();
+            } catch (error) {
+                console.error('Trips error:', error);
+            }
+        }
+
+        async function loadDeliveries() {
+            try {
+                const result = await callAPI('getDeliveries');
+                appState.deliveries = result.data || [];
+                console.log('Deliveries loaded:', appState.deliveries.length);
+            } catch (error) {
+                console.error('Deliveries error:', error);
+            }
+        }
+
+        async function autoRefresh() {
+            try {
+                await Promise.all([
+                    loadDashboard(),
+                    loadCustomers(),
+                    loadTrips(),
+                    loadDeliveries()
+                ]);
+            } catch (error) {
+                console.log('Auto-refresh error:', error);
+            }
+        }
+
+        // ============================================
+        // UI SETUP FUNCTIONS
+        // ============================================
+
+        function setupUI() {
+            // SET SCHEDULE DATE TO TODAY
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('scheduleDate').value = today;
+            document.getElementById('tripDate').value = today;
+            document.getElementById('todayDate').textContent = formatDate(new Date());
+
+            // SETUP RATING STARS
+            setupRatingStars();
+
+            // EVENT LISTENERS
+            document.getElementById('scheduleDate').addEventListener('change', updateTripsUI);
+            document.getElementById('customerSearch').addEventListener('input', updateCustomerUI);
+
+            updateDashboardUI();
+        }
+
+        function setupRatingStars() {
+            const container = document.getElementById('ratingStars');
+            container.innerHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                const star = document.createElement('span');
+                star.className = 'star filled';
+                star.textContent = '⭐';
+                star.onclick = () => {
+                    appState.currentRating = i;
+                    setupRatingStars();
+                };
+                container.appendChild(star);
+            }
+            // HIGHLIGHT SELECTED RATING
+            const stars = container.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < appState.currentRating) {
+                    star.classList.add('filled');
+                } else {
+                    star.classList.remove('filled');
+                }
+            });
+        }
+
+        function updateDashboardUI() {
+            const data = appState.dashboard;
+            document.getElementById('metricTrips').textContent = data.completed_trips || 0;
+            document.getElementById('metricDistance').textContent = (data.total_distance_km || 0) + ' km';
+            document.getElementById('metricRevenue').textContent = '₹' + (data.total_revenue || 0);
+            document.getElementById('metricCustomers').textContent = data.unique_customers || 0;
+        }
+
+        function updateCustomerUI() {
+            const list = document.getElementById('customersList');
+            const search = document.getElementById('customerSearch').value.toLowerCase();
+            const filtered = appState.customers.filter(c => 
+                c.name.toLowerCase().includes(search) || c.phone.includes(search)
+            );
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><p>No customers found</p></div>';
+                return;
+            }
+
+            list.innerHTML = filtered.map(c => `
+                <div class="list-item">
+                    <div class="item-info">
+                        <h4>${c.name}</h4>
+                        <p>📞 ${c.phone} | 📍 ${c.address}</p>
+                        <p>Trips: ${c.total_trips} | Revenue: ₹${c.total_revenue}</p>
+                    </div>
+                    <div class="item-actions">
+                        <a href="tel:${c.phone}" class="btn-icon" title="Call">📞</a>
+                        <button class="btn-icon" onclick="deleteCustomer('${c.id}', '${c.name}')" title="Delete">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateTripsUI() {
+            const list = document.getElementById('tripsList');
+            const selectedDate = document.getElementById('scheduleDate').value;
+            const filtered = appState.trips.filter(t => t.date === selectedDate);
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No trips scheduled</p></div>';
+                return;
+            }
+
+            list.innerHTML = filtered.map(t => `
+                <div class="list-item">
+                    <div class="item-info">
+                        <h4>${t.customers}</h4>
+                        <p>🕐 ${t.scheduled_time} | 📍 ${t.pickup_location} → ${t.delivery_location}</p>
+                        <p>Distance: ${t.expected_distance} km | Type: ${t.delivery_type}</p>
+                        <p><span class="status-badge">${t.trip_status}</span></p>
+                    </div>
+                    <div class="item-actions">
+                        <a href="tel:${getCustomerPhone(t.customers)}" class="btn-icon">📞</a>
+                        <button class="btn-icon" onclick="startDeliveryFromTrip('${t.id}')">▶️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateCustomerDropdowns() {
+            const dropdown1 = document.getElementById('deliveryCustomer');
+            const dropdown2 = document.getElementById('tripCustomer');
+            
+            const options = `<option value="">-- Select Customer --</option>` +
+                appState.customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            
+            dropdown1.innerHTML = options;
+            dropdown2.innerHTML = options;
+        }
+
+        // ============================================
+        // CUSTOMER MANAGEMENT
+        // ============================================
+
+        function openAddCustomerForm() {
+            document.getElementById('addCustomerModal').classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        async function submitAddCustomer(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('formName').value.trim();
+            const phone = document.getElementById('formPhone').value.trim();
+            const address = document.getElementById('formAddress').value.trim();
+
+            if (!name || !phone || !address) {
+                showToast('❌ Please fill all required fields', 'error');
+                return;
+            }
+
+            showLoading('Adding customer...');
+
+            try {
+                const result = await callAPI('addCustomer', {
+                    name: name,
+                    phone: phone,
+                    address: address,
+                    city: document.getElementById('formCity').value,
+                    landmark: document.getElementById('formLandmark').value,
+                    type: document.getElementById('formType').value
+                });
+
+                if (result.success) {
+                    showToast('✅ Customer added!', 'success');
+                    closeModal('addCustomerModal');
+                    document.querySelector('form').reset();
+                    await loadCustomers();
+                } else {
+                    showToast('❌ ' + result.error, 'error');
+                }
+            } catch (error) {
+                showToast('❌ ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function deleteCustomer(customerId, name) {
+            if (!confirm(`Delete ${name}?`)) return;
+
+            showLoading('Deleting...');
+
+            try {
+                const result = await callAPI('deleteCustomer', { customer_id: customerId });
+                if (result.success) {
+                    showToast('✅ Customer deleted', 'success');
+                    await loadCustomers();
+                } else {
+                    showToast('❌ Error', 'error');
+                }
+            } catch (error) {
+                showToast('❌ ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // ============================================
+        // TRIP MANAGEMENT
+        // ============================================
+
+        function openAddTripForm() {
+            document.getElementById('addTripModal').classList.remove('hidden');
+        }
+
+        async function submitAddTrip(event) {
+            event.preventDefault();
+
+            const customerSelect = document.getElementById('tripCustomer');
+            const customerId = customerSelect.value;
+            const customerName = customerSelect.options[customerSelect.selectedIndex].text;
+
+            showLoading('Creating trip...');
+
+            try {
+                const result = await callAPI('addTrip', {
+                    customers: customerName,
+                    customer_count: 1,
+                    pickup_location: document.getElementById('tripPickup').value,
+                    delivery_location: document.getElementById('tripDelivery').value,
+                    expected_distance: document.getElementById('tripDistance').value,
+                    delivery_type: document.getElementById('tripType').value
+                });
+
+                if (result.success) {
+                    showToast('✅ Trip created!', 'success');
+                    closeModal('addTripModal');
+                    document.querySelector('#addTripModal form').reset();
+                    await loadTrips();
+                } else {
+                    showToast('❌ ' + result.error, 'error');
+                }
+            } catch (error) {
+                showToast('❌ ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // ============================================
+        // DELIVERY MANAGEMENT
+        // ============================================
+
+        function startDeliveryFromTrip(tripId) {
+            const trip = appState.trips.find(t => t.id === tripId);
+            if (!trip) return;
+
+            document.getElementById('deliveryCustomer').value = getCustomerId(trip.customers);
+            document.getElementById('pickupLocation').value = trip.pickup_location;
+            document.getElementById('deliveryLocation').value = trip.delivery_location;
+            document.getElementById('expectedDistance').value = trip.expected_distance;
+            document.getElementById('deliveryType').value = trip.delivery_type;
+
+            appState.currentDelivery = { trip_id: tripId };
+            startDelivery();
+        }
+
+        async function startDelivery() {
+            const customerId = document.getElementById('deliveryCustomer').value;
+            if (!customerId) {
+                showToast('❌ Please select a customer', 'error');
+                return;
+            }
+
+            const customer = appState.customers.find(c => c.id === customerId);
+            appState.currentDelivery = {
+                customer_id: customerId,
+                customer_name: customer.name,
+                phone: customer.phone,
+                pickup_location: document.getElementById('pickupLocation').value,
+                pickup_description: document.getElementById('pickupDesc').value,
+                delivery_location: document.getElementById('deliveryLocation').value,
+                delivery_description: document.getElementById('deliveryDesc').value,
+                expected_distance: document.getElementById('expectedDistance').value
+            };
+
+            // SWITCH TO ONGOING VIEW
+            document.getElementById('deliveryFormSection').style.display = 'none';
+            document.getElementById('ongoingDeliverySection').style.display = 'block';
+            
+            // UPDATE UI
+            document.getElementById('ongoingCustomer').textContent = customer.name;
+            document.getElementById('ongoingCall').href = `tel:${customer.phone}`;
+            document.getElementById('ongoingWhatsapp').href = `https://wa.me/${customer.phone}`;
+
+            showToast('✅ Delivery started!', 'success');
+        }
+
+        async function sendMessage(template, title) {
+            const customerId = appState.currentDelivery.customer_id;
+            const customerName = appState.currentDelivery.customer_name;
+            const phone = appState.currentDelivery.phone;
+
+            let message = '';
+            switch (template) {
+                case 'trip_started':
+                    message = `Your delivery has started. Expected arrival in 20 minutes.`;
+                    break;
+                case 'on_way':
+                    message = `We are on the way to pick up your order. ETA 15 minutes.`;
+                    break;
+                case 'arriving':
+                    message = `We are arriving at your location in 5 minutes.`;
+                    break;
+            }
+
+            try {
+                const result = await callAPI('sendMessage', {
+                    customer_id: customerId,
+                    customer_name: customerName,
+                    phone: phone,
+                    template: template,
+                    message: message
+                });
+
+                if (result.success) {
+                    showToast(`✅ ${title} sent!`, 'success');
+                } else {
+                    showToast('❌ Error sending message', 'error');
+                }
+            } catch (error) {
+                showToast('❌ ' + error.message, 'error');
+            }
+        }
+
+        function capturePhoto() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.capture = 'environment';
+
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        appState.photoData = event.target.result;
+                        const preview = document.getElementById('photoPreview');
+                        preview.innerHTML = `
+                            <img src="${event.target.result}" style="max-width: 100%; border-radius: 8px; max-height: 200px;">
+                            <div style="font-size: 12px; color: #4caf50; margin-top: 4px;">✓ Photo captured</div>
+                        `;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            input.click();
+        }
+
+        async function completeDelivery() {
+            if (!appState.photoData) {
+                showToast('❌ Proof photo is required', 'error');
+                return;
+            }
+
+            const recipientName = document.getElementById('recipientName').value.trim();
+            if (!recipientName) {
+                showToast('❌ Please enter recipient name', 'error');
+                return;
+            }
+
+            showLoading('Completing delivery...');
+
+            try {
+                const result = await callAPI('addDelivery', {
+                    customer_id: appState.currentDelivery.customer_id,
+                    customer_name: appState.currentDelivery.customer_name,
+                    phone: appState.currentDelivery.phone,
+                    pickup_location: appState.currentDelivery.pickup_location,
+                    pickup_description: appState.currentDelivery.pickup_description,
+                    delivery_location: appState.currentDelivery.delivery_location,
+                    delivery_description: appState.currentDelivery.delivery_description,
+                    expected_distance: appState.currentDelivery.expected_distance,
+                    recipient_name: recipientName,
+                    photo_url: appState.photoData.substring(0, 50) + '...', // Store reference
+                    rating: appState.currentRating,
+                    delivery_status: document.getElementById('deliveryStatus').value,
+                    notes: document.getElementById('deliveryNotes').value
+                });
+
+                if (result.success) {
+                    showToast('✅ Delivery completed!', 'success');
+                    cancelDelivery();
+                    await Promise.all([loadDashboard(), loadDeliveries()]);
+                } else {
+                    showToast('❌ ' + result.error, 'error');
+                }
+            } catch (error) {
+                showToast('❌ ' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function cancelDelivery() {
+            appState.currentDelivery = null;
+            appState.photoData = null;
+            appState.currentRating = 5;
+
+            // RESET FORM
+            document.getElementById('deliveryFormSection').style.display = 'block';
+            document.getElementById('ongoingDeliverySection').style.display = 'none';
+            document.getElementById('photoPreview').innerHTML = '';
+            document.getElementById('recipientName').value = '';
+            document.getElementById('deliveryNotes').value = '';
+            document.getElementById('deliveryStatus').value = 'Completed';
+            setupRatingStars();
+
+            showToast('Delivery cancelled', 'warning');
+        }
+
+        // ============================================
+        // UI HELPERS
+        // ============================================
+
+        function switchTab(tabName) {
+            // HIDE ALL TABS
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // REMOVE ACTIVE FROM NAV
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // SHOW SELECTED TAB
+            document.getElementById(tabName + 'Tab').classList.add('active');
+
+            // ADD ACTIVE TO NAV
+            event.target.closest('.nav-item')?.classList.add('active');
+        }
+
+        function showLoading(text) {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
+        function showError(title, message) {
+            document.getElementById('loadingText').textContent = title;
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function formatDate(date) {
+            return new Intl.DateTimeFormat('en-IN', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }).format(date);
+        }
+
+        function getCustomerPhone(name) {
+            const customer = appState.customers.find(c => c.name === name);
+            return customer ? customer.phone : '';
+        }
+
+        function getCustomerId(name) {
+            const customer = appState.customers.find(c => c.name === name);
+            return customer ? customer.id : '';
+        }
+    </script>
+</body>
+</html>
