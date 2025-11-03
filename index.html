@@ -412,24 +412,9 @@
         window.addEventListener('DOMContentLoaded', initApp);
 
         async function initApp() {
-            showLoading('Checking configuration...');
+           
 
-            // VALIDATE CONFIGURATION
-            if (APPS_SCRIPT_URL === 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') {
-                showError('❌ Configuration Error', 'Please edit line 490 and paste your Apps Script URL');
-                return;
-            }
-
-            if (!APPS_SCRIPT_URL.includes('script.google.com')) {
-                showError('❌ Invalid URL', 'URL must contain "script.google.com"');
-                return;
-            }
-
-            if (!APPS_SCRIPT_URL.endsWith('/exec')) {
-                showError('❌ Incomplete URL', 'URL must end with "/exec"');
-                return;
-            }
-
+            
             showLoading('Testing API connection...');
 
             try {
