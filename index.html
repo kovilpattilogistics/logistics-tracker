@@ -48,7 +48,6 @@
             font-size: 14px;
         }
 
-        /* Tabs */
         .tabs {
             display: flex;
             gap: 10px;
@@ -81,7 +80,6 @@
             background: #e3f2fd;
         }
 
-        /* Tab Content */
         .tab-content {
             display: none;
             animation: fadeIn 0.3s;
@@ -96,7 +94,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Cards */
         .card {
             background: var(--card-bg);
             border-radius: 8px;
@@ -111,7 +108,6 @@
             font-size: 20px;
         }
 
-        /* Forms */
         .form-group {
             margin-bottom: 15px;
         }
@@ -143,7 +139,22 @@
             gap: 15px;
         }
 
-        /* Buttons */
+        /* NEW: Sale form with quantity and price */
+        .sale-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 6px;
+        }
+
+        .sale-item label {
+            font-size: 13px;
+        }
+
         .btn {
             padding: 10px 20px;
             border: none;
@@ -183,7 +194,6 @@
             cursor: not-allowed;
         }
 
-        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -210,7 +220,6 @@
             font-weight: bold;
         }
 
-        /* Table */
         .table-container {
             overflow-x: auto;
         }
@@ -245,7 +254,6 @@
             font-size: 12px;
         }
 
-        /* Messages */
         .message {
             padding: 12px;
             border-radius: 6px;
@@ -275,21 +283,12 @@
             border: 1px solid #f5c6cb;
         }
 
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 40px;
             color: #999;
         }
 
-        .empty-state svg {
-            width: 64px;
-            height: 64px;
-            margin-bottom: 15px;
-            opacity: 0.3;
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -305,6 +304,10 @@
             }
 
             .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .sale-item {
                 grid-template-columns: 1fr;
             }
 
@@ -477,24 +480,70 @@
             <div class="card">
                 <h2>New Sale</h2>
                 <form id="sale-form">
-                    <div class="form-row">
+                    <!-- 300ml -->
+                    <div class="sale-item">
                         <div class="form-group">
-                            <label>300ml Bottles</label>
+                            <label>300ml Bottles (Quantity)</label>
                             <input type="number" id="sale-300ml" min="0" value="0" oninput="calculateTotal()">
                         </div>
                         <div class="form-group">
-                            <label>500ml Bottles</label>
+                            <label>Price per bottle (₹)</label>
+                            <input type="number" id="price-300ml" min="0" step="0.01" value="5.00" oninput="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Subtotal</label>
+                            <input type="text" id="subtotal-300ml" readonly style="background: #e9ecef; font-weight: bold;">
+                        </div>
+                    </div>
+
+                    <!-- 500ml -->
+                    <div class="sale-item">
+                        <div class="form-group">
+                            <label>500ml Bottles (Quantity)</label>
                             <input type="number" id="sale-500ml" min="0" value="0" oninput="calculateTotal()">
                         </div>
                         <div class="form-group">
-                            <label>1L Bottles</label>
+                            <label>Price per bottle (₹)</label>
+                            <input type="number" id="price-500ml" min="0" step="0.01" value="7.00" oninput="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Subtotal</label>
+                            <input type="text" id="subtotal-500ml" readonly style="background: #e9ecef; font-weight: bold;">
+                        </div>
+                    </div>
+
+                    <!-- 1L -->
+                    <div class="sale-item">
+                        <div class="form-group">
+                            <label>1L Bottles (Quantity)</label>
                             <input type="number" id="sale-1l" min="0" value="0" oninput="calculateTotal()">
                         </div>
                         <div class="form-group">
-                            <label>20L Cans</label>
-                            <input type="number" id="sale-20l" min="0" value="0" oninput="calculateTotal()">
+                            <label>Price per bottle (₹)</label>
+                            <input type="number" id="price-1l" min="0" step="0.01" value="10.00" oninput="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Subtotal</label>
+                            <input type="text" id="subtotal-1l" readonly style="background: #e9ecef; font-weight: bold;">
                         </div>
                     </div>
+
+                    <!-- 20L -->
+                    <div class="sale-item">
+                        <div class="form-group">
+                            <label>20L Cans (Quantity)</label>
+                            <input type="number" id="sale-20l" min="0" value="0" oninput="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Price per can (₹)</label>
+                            <input type="number" id="price-20l" min="0" step="0.01" value="180.00" oninput="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Subtotal</label>
+                            <input type="text" id="subtotal-20l" readonly style="background: #e9ecef; font-weight: bold;">
+                        </div>
+                    </div>
+
                     <div style="background: #e3f2fd; padding: 15px; border-radius: 6px; margin: 15px 0;">
                         <h3 style="margin-bottom: 10px;">Order Summary</h3>
                         <div id="order-summary"></div>
@@ -513,16 +562,6 @@
         // CONFIGURATION
         // ========================================
         
-        /* 
-         * IMPORTANT: Replace 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' with your actual deployment URL
-         * 
-         * To get your URL:
-         * 1. Open Google Apps Script (Extensions → Apps Script)
-         * 2. Click Deploy → Manage deployments
-         * 3. Copy the Web app URL (looks like: https://script.google.com/macros/s/AKfycbx.../exec)
-         * 4. Paste it below replacing 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'
-         */
-        
         const config = {
             scriptUrl: 'https://script.google.com/macros/s/AKfycbxobzVabIwj9jL7Hqhcqp5HWewJxko0SWEdzcxnW2UViaRM4JYzDUsQ-XPRQc-kZJGR/exec',  // ← PASTE YOUR APPS SCRIPT URL HERE
             enableGoogleSheets: true,
@@ -530,16 +569,15 @@
         };
 
         // ========================================
-        // PRICING CONFIGURATION (Fixed Prices)
+        // PRICING CONFIGURATION (For Stock Purchase Only)
         // ========================================
         
-        const PRICES = {
-            '300ml': { buyingPrice: 130, packSize: 35, unitPrice: 3.71 },
-            '500ml': { buyingPrice: 110, packSize: 24, unitPrice: 4.58 },
-            '1l': { buyingPrice: 85, packSize: 12, unitPrice: 7.08 },
-            '20l_empty': { buyingPrice: 145, packSize: 1, unitPrice: 145 },
-            '20l_refill': { buyingPrice: 11, packSize: 1, unitPrice: 11 },
-            '20l_filled': { sellingPrice: 156 }
+        const STOCK_PRICES = {
+            '300ml': { buyingPrice: 130, packSize: 35 },
+            '500ml': { buyingPrice: 110, packSize: 24 },
+            '1l': { buyingPrice: 85, packSize: 12 },
+            '20l_empty': { buyingPrice: 145, packSize: 1 },
+            '20l_refill': { buyingPrice: 11, packSize: 1 }
         };
 
         // ========================================
@@ -566,6 +604,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             loadData();
             setupEventListeners();
+            calculateTotal(); // Initialize totals
         });
 
         function setupEventListeners() {
@@ -581,32 +620,22 @@
         
         function loadData() {
             if (config.enableGoogleSheets && config.scriptUrl !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-                // Load from Google Sheets
-                console.log('🔄 Loading data from Google Sheets...');
                 fetch(`${config.scriptUrl}?action=loadData`)
-                    .then(response => {
-                        console.log('📡 Response received:', response.status);
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.error) {
-                            console.error('❌ Error loading from Google Sheets:', data.error);
-                            showMessage('Loading from local storage (Sheets error)', 'error');
-                            loadFromLocalStorage();
-                        } else {
-                            console.log('✅ Data loaded from Google Sheets:', data);
-                            appState = data;
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success && result.data) {
+                            appState = result.data;
                             refreshUI();
                             showMessage('Data loaded from Google Sheets', 'success');
+                        } else {
+                            loadFromLocalStorage();
                         }
                     })
                     .catch(error => {
-                        console.error('❌ Failed to load from Google Sheets:', error);
-                        showMessage('Loading from local storage (Sheets unreachable)', 'error');
+                        console.error('Failed to load from Google Sheets:', error);
                         loadFromLocalStorage();
                     });
             } else {
-                console.log('📂 Google Sheets not configured, loading from localStorage');
                 loadFromLocalStorage();
             }
         }
@@ -621,12 +650,9 @@
         }
 
         function saveData() {
-            // Save to localStorage as fallback
             localStorage.setItem('waterSupplyData', JSON.stringify(appState));
 
-            // Save to Google Sheets
             if (config.enableGoogleSheets && config.scriptUrl !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-                // Use fetch with proper CORS handling
                 fetch(config.scriptUrl, {
                     method: 'POST',
                     headers: {
@@ -641,18 +667,18 @@
                 .then(result => {
                     if (result.success) {
                         console.log('✅ Data saved to Google Sheets successfully');
-                        showMessage('Data synced to Google Sheets', 'success');
+                        showMessage('Data saved to Google Sheets', 'success');
                     } else {
                         console.error('❌ Google Sheets save error:', result.error);
-                        showMessage('Saved locally (Sync error: ' + result.error + ')', 'error');
+                        showMessage('Saved locally (Google Sheets sync failed)', 'error');
                     }
                 })
                 .catch(error => {
-                    console.error('❌ Failed to save to Google Sheets:', error);
-                    showMessage('Saved locally (Google Sheets unreachable)', 'error');
+                    console.error('❌ Failed to save:', error);
+                    showMessage('Saved locally (Google Sheets sync failed)', 'error');
                 });
             } else {
-                showMessage('Data saved locally (Google Sheets not configured)', 'success');
+                showMessage('Data saved locally', 'success');
             }
         }
 
@@ -661,15 +687,12 @@
         // ========================================
         
         function switchTab(tabName) {
-            // Update tab buttons
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
 
-            // Update tab content
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.getElementById(`${tabName}-tab`).classList.add('active');
 
-            // Refresh specific tab
             if (tabName === 'delivery') {
                 loadCustomerDropdown();
             }
@@ -769,28 +792,39 @@
             const q1l = parseInt(document.getElementById('sale-1l').value) || 0;
             const q20l = parseInt(document.getElementById('sale-20l').value) || 0;
 
+            const p300 = parseFloat(document.getElementById('price-300ml').value) || 0;
+            const p500 = parseFloat(document.getElementById('price-500ml').value) || 0;
+            const p1l = parseFloat(document.getElementById('price-1l').value) || 0;
+            const p20l = parseFloat(document.getElementById('price-20l').value) || 0;
+
+            const s300 = q300 * p300;
+            const s500 = q500 * p500;
+            const s1l = q1l * p1l;
+            const s20l = q20l * p20l;
+
+            document.getElementById('subtotal-300ml').value = s300 > 0 ? `₹${s300.toFixed(2)}` : '';
+            document.getElementById('subtotal-500ml').value = s500 > 0 ? `₹${s500.toFixed(2)}` : '';
+            document.getElementById('subtotal-1l').value = s1l > 0 ? `₹${s1l.toFixed(2)}` : '';
+            document.getElementById('subtotal-20l').value = s20l > 0 ? `₹${s20l.toFixed(2)}` : '';
+
             let summary = [];
             let total = 0;
 
             if (q300 > 0) {
-                const price = q300 * PRICES['300ml'].unitPrice;
-                summary.push(`${q300}x 300ml = ₹${price.toFixed(2)}`);
-                total += price;
+                summary.push(`${q300}x 300ml @ ₹${p300} = ₹${s300.toFixed(2)}`);
+                total += s300;
             }
             if (q500 > 0) {
-                const price = q500 * PRICES['500ml'].unitPrice;
-                summary.push(`${q500}x 500ml = ₹${price.toFixed(2)}`);
-                total += price;
+                summary.push(`${q500}x 500ml @ ₹${p500} = ₹${s500.toFixed(2)}`);
+                total += s500;
             }
             if (q1l > 0) {
-                const price = q1l * PRICES['1l'].unitPrice;
-                summary.push(`${q1l}x 1L = ₹${price.toFixed(2)}`);
-                total += price;
+                summary.push(`${q1l}x 1L @ ₹${p1l} = ₹${s1l.toFixed(2)}`);
+                total += s1l;
             }
             if (q20l > 0) {
-                const price = q20l * PRICES['20l_filled'].sellingPrice;
-                summary.push(`${q20l}x 20L = ₹${price.toFixed(2)}`);
-                total += price;
+                summary.push(`${q20l}x 20L @ ₹${p20l} = ₹${s20l.toFixed(2)}`);
+                total += s20l;
             }
 
             document.getElementById('order-summary').innerHTML = summary.length > 0 
@@ -814,11 +848,10 @@
                 return;
             }
 
-            const priceInfo = PRICES[product];
+            const priceInfo = STOCK_PRICES[product];
             let unitsToAdd = quantity * priceInfo.packSize;
             let cost = quantity * priceInfo.buyingPrice;
 
-            // Handle refill logic
             if (product === '20l_refill') {
                 if (appState.inventory['20l_empty'] < quantity) {
                     showMessage('Not enough empty cans to refill', 'error');
@@ -832,7 +865,6 @@
                 appState.inventory[product] += unitsToAdd;
             }
 
-            // Record transaction
             appState.transactions.push({
                 date: new Date().toISOString(),
                 product: product,
@@ -859,7 +891,6 @@
                 return;
             }
 
-            // Check duplicate
             if (appState.customers.find(c => c.mobile === mobile)) {
                 showMessage('Customer with this mobile already exists', 'error');
                 return;
@@ -918,14 +949,10 @@
                 return;
             }
 
-            // Update customer
             customer.emptyCans -= quantity;
             customer.cansReturned += quantity;
-
-            // Update inventory
             appState.inventory['20l_empty'] += quantity;
 
-            // Record order
             appState.orders.push({
                 date: new Date().toISOString(),
                 customer: customer.name,
@@ -950,6 +977,11 @@
             const q1l = parseInt(document.getElementById('sale-1l').value) || 0;
             const q20l = parseInt(document.getElementById('sale-20l').value) || 0;
 
+            const p300 = parseFloat(document.getElementById('price-300ml').value) || 0;
+            const p500 = parseFloat(document.getElementById('price-500ml').value) || 0;
+            const p1l = parseFloat(document.getElementById('price-1l').value) || 0;
+            const p20l = parseFloat(document.getElementById('price-20l').value) || 0;
+
             if (!mobile) {
                 showMessage('Please select a customer', 'error');
                 return;
@@ -960,7 +992,6 @@
                 return;
             }
 
-            // Check stock
             if (q300 > appState.inventory['300ml'] || 
                 q500 > appState.inventory['500ml'] ||
                 q1l > appState.inventory['1l'] ||
@@ -975,31 +1006,30 @@
                 return;
             }
 
-            // Calculate total
             let total = 0;
             let items = [];
 
             if (q300 > 0) {
-                total += q300 * PRICES['300ml'].unitPrice;
-                items.push(`${q300}x 300ml`);
+                total += q300 * p300;
+                items.push(`${q300}x 300ml @ ₹${p300}`);
                 appState.inventory['300ml'] -= q300;
                 customer.purchases['300ml'] += q300;
             }
             if (q500 > 0) {
-                total += q500 * PRICES['500ml'].unitPrice;
-                items.push(`${q500}x 500ml`);
+                total += q500 * p500;
+                items.push(`${q500}x 500ml @ ₹${p500}`);
                 appState.inventory['500ml'] -= q500;
                 customer.purchases['500ml'] += q500;
             }
             if (q1l > 0) {
-                total += q1l * PRICES['1l'].unitPrice;
-                items.push(`${q1l}x 1L`);
+                total += q1l * p1l;
+                items.push(`${q1l}x 1L @ ₹${p1l}`);
                 appState.inventory['1l'] -= q1l;
                 customer.purchases['1l'] += q1l;
             }
             if (q20l > 0) {
-                total += q20l * PRICES['20l_filled'].sellingPrice;
-                items.push(`${q20l}x 20L`);
+                total += q20l * p20l;
+                items.push(`${q20l}x 20L @ ₹${p20l}`);
                 appState.inventory['20l_filled'] -= q20l;
                 customer.purchases['20l'] += q20l;
                 customer.emptyCans += q20l;
@@ -1007,7 +1037,6 @@
 
             customer.totalOrders++;
 
-            // Record order
             appState.orders.push({
                 date: new Date().toISOString(),
                 customer: customer.name,
