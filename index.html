@@ -1,1074 +1,1000 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#1FB8CD">
-  <meta name="description" content="Water Supply Management System - Professional inventory and order management">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="manifest" href="#">
-  <title>Water Supply Manager</title>
-  <style>
-    :root {
-  /* Primitive Color Tokens */
-  --color-white: rgba(255, 255, 255, 1);
-  --color-black: rgba(0, 0, 0, 1);
-  --color-cream-50: rgba(252, 252, 249, 1);
-  --color-cream-100: rgba(255, 255, 253, 1);
-  --color-gray-200: rgba(245, 245, 245, 1);
-  --color-gray-300: rgba(167, 169, 169, 1);
-  --color-gray-400: rgba(119, 124, 124, 1);
-  --color-slate-500: rgba(98, 108, 113, 1);
-  --color-brown-600: rgba(94, 82, 64, 1);
-  --color-charcoal-700: rgba(31, 33, 33, 1);
-  --color-charcoal-800: rgba(38, 40, 40, 1);
-  --color-slate-900: rgba(19, 52, 59, 1);
-  --color-teal-300: rgba(50, 184, 198, 1);
-  --color-teal-400: rgba(45, 166, 178, 1);
-  --color-teal-500: rgba(33, 128, 141, 1);
-  --color-teal-600: rgba(29, 116, 128, 1);
-  --color-teal-700: rgba(26, 104, 115, 1);
-  --color-teal-800: rgba(41, 150, 161, 1);
-  --color-red-400: rgba(255, 84, 89, 1);
-  --color-red-500: rgba(192, 21, 47, 1);
-  --color-orange-400: rgba(230, 129, 97, 1);
-  --color-orange-500: rgba(168, 75, 47, 1);
-
-  /* RGB versions for opacity control */
-  --color-brown-600-rgb: 94, 82, 64;
-  --color-teal-500-rgb: 33, 128, 141;
-  --color-slate-900-rgb: 19, 52, 59;
-  --color-slate-500-rgb: 98, 108, 113;
-  --color-red-500-rgb: 192, 21, 47;
-  --color-red-400-rgb: 255, 84, 89;
-  --color-orange-500-rgb: 168, 75, 47;
-  --color-orange-400-rgb: 230, 129, 97;
-
-  /* Background color tokens (Light Mode) */
-  --color-bg-1: rgba(59, 130, 246, 0.08);
-  --color-bg-2: rgba(245, 158, 11, 0.08);
-  --color-bg-3: rgba(34, 197, 94, 0.08);
-  --color-bg-4: rgba(239, 68, 68, 0.08);
-  --color-bg-5: rgba(147, 51, 234, 0.08);
-  --color-bg-6: rgba(249, 115, 22, 0.08);
-  --color-bg-7: rgba(236, 72, 153, 0.08);
-  --color-bg-8: rgba(6, 182, 212, 0.08);
-
-  /* Semantic Color Tokens */
-  --color-background: var(--color-cream-50);
-  --color-surface: var(--color-cream-100);
-  --color-text: var(--color-slate-900);
-  --color-text-secondary: var(--color-slate-500);
-  --color-primary: var(--color-teal-500);
-  --color-primary-hover: var(--color-teal-600);
-  --color-primary-active: var(--color-teal-700);
-  --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
-  --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
-  --color-border: rgba(var(--color-brown-600-rgb), 0.2);
-  --color-btn-primary-text: var(--color-cream-50);
-  --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-error: var(--color-red-500);
-  --color-success: var(--color-teal-500);
-  --color-warning: var(--color-orange-500);
-  --color-info: var(--color-slate-500);
-  --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
-  --color-select-caret: rgba(var(--color-slate-900-rgb), 0.8);
-
-  /* Typography */
-  --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-size-xs: 11px;
-  --font-size-sm: 12px;
-  --font-size-base: 14px;
-  --font-size-md: 14px;
-  --font-size-lg: 16px;
-  --font-size-xl: 18px;
-  --font-size-2xl: 20px;
-  --font-size-3xl: 24px;
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 550;
-  --font-weight-bold: 600;
-
-  /* Spacing */
-  --space-4: 4px;
-  --space-8: 8px;
-  --space-12: 12px;
-  --space-16: 16px;
-  --space-20: 20px;
-  --space-24: 24px;
-  --space-32: 32px;
-
-  /* Border Radius */
-  --radius-sm: 6px;
-  --radius-base: 8px;
-  --radius-md: 10px;
-  --radius-lg: 12px;
-  --radius-full: 9999px;
-
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
-
-  /* Animation */
-  --duration-fast: 150ms;
-  --duration-normal: 250ms;
-  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-gray-400-rgb: 119, 124, 124;
-    --color-teal-300-rgb: 50, 184, 198;
-    --color-gray-300-rgb: 167, 169, 169;
-    --color-gray-200-rgb: 245, 245, 245;
-
-    --color-bg-1: rgba(29, 78, 216, 0.15);
-    --color-bg-2: rgba(180, 83, 9, 0.15);
-    --color-bg-3: rgba(21, 128, 61, 0.15);
-    --color-bg-4: rgba(185, 28, 28, 0.15);
-    --color-bg-5: rgba(107, 33, 168, 0.15);
-    --color-bg-6: rgba(194, 65, 12, 0.15);
-    --color-bg-7: rgba(190, 24, 93, 0.15);
-    --color-bg-8: rgba(8, 145, 178, 0.15);
-
-    --color-background: var(--color-charcoal-700);
-    --color-surface: var(--color-charcoal-800);
-    --color-text: var(--color-gray-200);
-    --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
-    --color-primary: var(--color-teal-300);
-    --color-primary-hover: var(--color-teal-400);
-    --color-primary-active: var(--color-teal-800);
-    --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
-    --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
-    --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
-    --color-border: rgba(var(--color-gray-400-rgb), 0.3);
-    --color-error: var(--color-red-400);
-    --color-success: var(--color-teal-300);
-    --color-warning: var(--color-orange-400);
-    --color-info: var(--color-gray-300);
-    --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
-    --color-btn-primary-text: var(--color-slate-900);
-    --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
-    --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
-    --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
-  }
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-body {
-  font-family: var(--font-family-base);
-  font-size: var(--font-size-base);
-  color: var(--color-text);
-  background-color: var(--color-background);
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-  padding-bottom: 72px;
-}
-
-/* App Layout */
-.app-container {
-  max-width: 768px;
-  margin: 0 auto;
-  min-height: 100vh;
-}
-
-/* Header */
-.app-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-card-border);
-  padding: var(--space-16);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: var(--shadow-sm);
-}
-
-.app-header h1 {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text);
-}
-
-.header-actions {
-  display: flex;
-  gap: var(--space-12);
-  align-items: center;
-}
-
-.sync-indicator {
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-}
-
-.sync-indicator.syncing {
-  color: var(--color-primary);
-}
-
-.sync-indicator.error {
-  color: var(--color-error);
-}
-
-.sync-indicator.success {
-  color: var(--color-success);
-}
-
-.sync-icon {
-  width: 16px;
-  height: 16px;
-  animation: spin 1s linear infinite;
-}
-
-.sync-indicator.syncing .sync-icon {
-  animation: spin 1s linear infinite;
-}
-
-.sync-indicator:not(.syncing) .sync-icon {
-  animation: none;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* Bottom Navigation */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-card-border);
-  display: flex;
-  justify-content: space-around;
-  padding: var(--space-8) 0;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-  z-index: 100;
-  max-width: 768px;
-  margin: 0 auto;
-}
-
-.nav-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-8);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  border: none;
-  background: none;
-  transition: color var(--duration-fast) var(--ease-standard);
-  min-height: 48px;
-}
-
-.nav-item.active {
-  color: var(--color-primary);
-}
-
-.nav-item:active {
-  transform: scale(0.95);
-}
-
-.nav-icon {
-  font-size: 24px;
-}
-
-.nav-label {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-}
-
-/* Tab Content */
-.tab-content {
-  display: none;
-  padding: var(--space-16);
-  animation: fadeIn var(--duration-normal) var(--ease-standard);
-}
-
-.tab-content.active {
-  display: block;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Cards */
-.card {
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-card-border);
-  padding: var(--space-16);
-  margin-bottom: var(--space-16);
-  box-shadow: var(--shadow-sm);
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-12);
-}
-
-.card-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text);
-}
-
-/* Stats Grid */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: var(--space-12);
-  margin-bottom: var(--space-16);
-}
-
-.stat-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-card-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-16);
-  text-align: center;
-}
-
-.stat-value {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-  display: block;
-  margin-bottom: var(--space-4);
-}
-
-.stat-label {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-}
-
-/* Forms */
-.form-group {
-  margin-bottom: var(--space-16);
-}
-
-.form-label {
-  display: block;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text);
-  margin-bottom: var(--space-8);
-}
-
-.form-input {
-  width: 100%;
-  padding: var(--space-12);
-  font-size: var(--font-size-base);
-  color: var(--color-text);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-base);
-  transition: border-color var(--duration-fast) var(--ease-standard);
-  min-height: 48px;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-focus-ring);
-}
-
-/* Buttons */
-.btn {
-  padding: var(--space-12) var(--space-24);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  border: none;
-  border-radius: var(--radius-base);
-  cursor: pointer;
-  transition: all var(--duration-fast) var(--ease-standard);
-  min-height: 48px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-8);
-}
-
-.btn-primary {
-  background: var(--color-primary);
-  color: var(--color-btn-primary-text);
-}
-
-.btn-primary:hover {
-  background: var(--color-primary-hover);
-}
-
-.btn-primary:active {
-  background: var(--color-primary-active);
-  transform: scale(0.98);
-}
-
-.btn-secondary {
-  background: var(--color-secondary);
-  color: var(--color-text);
-}
-
-.btn-secondary:hover {
-  background: var(--color-secondary-hover);
-}
-
-.btn-block {
-  width: 100%;
-}
-
-/* FAB */
-.fab {
-  position: fixed;
-  bottom: 88px;
-  right: var(--space-16);
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-full);
-  background: var(--color-primary);
-  color: var(--color-btn-primary-text);
-  border: none;
-  box-shadow: var(--shadow-lg);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  z-index: 90;
-  transition: all var(--duration-normal) var(--ease-standard);
-}
-
-.fab:active {
-  transform: scale(0.9);
-}
-
-/* Customer List */
-.customer-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-12);
-}
-
-.customer-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-card-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-16);
-  cursor: pointer;
-  transition: all var(--duration-fast) var(--ease-standard);
-}
-
-.customer-card:active {
-  transform: scale(0.98);
-  box-shadow: var(--shadow-md);
-}
-
-.customer-card.selected {
-  border-color: var(--color-primary);
-  background: var(--color-bg-1);
-}
-
-.customer-name {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text);
-  margin-bottom: var(--space-4);
-}
-
-.customer-info {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-/* Quantity Stepper */
-.quantity-stepper {
-  display: flex;
-  align-items: center;
-  gap: var(--space-12);
-}
-
-.stepper-btn {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-base);
-  background: var(--color-secondary);
-  color: var(--color-text);
-  border: none;
-  font-size: var(--font-size-xl);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--duration-fast) var(--ease-standard);
-}
-
-.stepper-btn:active {
-  transform: scale(0.9);
-  background: var(--color-secondary-hover);
-}
-
-.stepper-value {
-  min-width: 60px;
-  text-align: center;
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-}
-
-/* Search */
-.search-box {
-  position: sticky;
-  top: 65px;
-  z-index: 90;
-  background: var(--color-background);
-  padding: var(--space-16);
-  margin: calc(var(--space-16) * -1) calc(var(--space-16) * -1) var(--space-16);
-}
-
-.search-input {
-  width: 100%;
-  padding: var(--space-12) var(--space-16);
-  font-size: var(--font-size-base);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-full);
-  background: var(--color-surface);
-  color: var(--color-text);
-}
-
-/* Toast */
-.toast {
-  position: fixed;
-  bottom: 100px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--color-charcoal-700);
-  color: var(--color-white);
-  padding: var(--space-12) var(--space-24);
-  border-radius: var(--radius-full);
-  box-shadow: var(--shadow-lg);
-  z-index: 1000;
-  animation: slideUp var(--duration-normal) var(--ease-standard);
-  max-width: 90%;
-  text-align: center;
-}
-
-.toast.success {
-  background: var(--color-success);
-}
-
-.toast.error {
-  background: var(--color-error);
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 20px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
-
-/* Loading */
-.loading-skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--color-secondary) 25%,
-    var(--color-secondary-hover) 50%,
-    var(--color-secondary) 75%
-  );
-  background-size: 200% 100%;
-  animation: loading 1.5s ease-in-out infinite;
-  border-radius: var(--radius-base);
-  height: 20px;
-}
-
-@keyframes loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 200;
-  display: none;
-  align-items: flex-end;
-  animation: fadeIn var(--duration-normal) var(--ease-standard);
-}
-
-.modal-overlay.active {
-  display: flex;
-}
-
-.modal-content {
-  background: var(--color-surface);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  padding: var(--space-24);
-  width: 100%;
-  max-width: 768px;
-  margin: 0 auto;
-  max-height: 90vh;
-  overflow-y: auto;
-  animation: slideUpModal var(--duration-normal) var(--ease-standard);
-}
-
-@keyframes slideUpModal {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-20);
-}
-
-.modal-title {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-}
-
-.modal-close {
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: var(--color-secondary);
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  color: var(--color-text);
-}
-
-/* Sticky Total Bar */
-.sticky-total {
-  position: fixed;
-  bottom: 72px;
-  left: 0;
-  right: 0;
-  background: var(--color-primary);
-  color: var(--color-btn-primary-text);
-  padding: var(--space-16);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: var(--shadow-lg);
-  z-index: 95;
-  max-width: 768px;
-  margin: 0 auto;
-}
-
-.total-label {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-}
-
-.total-value {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-}
-
-/* Inventory Grid */
-.inventory-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: var(--space-12);
-}
-
-.inventory-item {
-  background: var(--color-surface);
-  border: 1px solid var(--color-card-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-16);
-  text-align: center;
-}
-
-.product-name {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  margin-bottom: var(--space-8);
-}
-
-.product-quantity {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-}
-
-/* Orders Table */
-.orders-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.orders-table th,
-.orders-table td {
-  padding: var(--space-12);
-  text-align: left;
-  border-bottom: 1px solid var(--color-card-border);
-  font-size: var(--font-size-sm);
-}
-
-.orders-table th {
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-xs);
-  text-transform: uppercase;
-}
-
-/* Quick Actions */
-.quick-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-12);
-  margin: var(--space-16) 0;
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: var(--space-32);
-  color: var(--color-text-secondary);
-}
-
-.empty-icon {
-  font-size: 48px;
-  margin-bottom: var(--space-16);
-  opacity: 0.5;
-}
-
-/* Pull to Refresh */
-.pull-to-refresh {
-  position: absolute;
-  top: -60px;
-  left: 0;
-  right: 0;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-secondary);
-  transition: transform var(--duration-normal) var(--ease-standard);
-}
-
-/* Utility Classes */
-.hidden {
-  display: none !important;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.mt-16 {
-  margin-top: var(--space-16);
-}
-
-.mb-8 {
-  margin-bottom: var(--space-8);
-}
-
-.flex {
-  display: flex;
-}
-
-.flex-between {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.gap-8 {
-  gap: var(--space-8);
-}
-
-.grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-12);
-}
-
-/* Responsive */
-@media (max-width: 480px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .inventory-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💧 Water Supply Manager</title>
+    <style>
+        :root {
+            --primary: #2196F3;
+            --success: #4CAF50;
+            --danger: #f44336;
+            --warning: #ff9800;
+            --bg: #f5f5f5;
+            --card: #ffffff;
+            --text: #333;
+            --border: #ddd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .sync-status {
+            text-align: center;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: var(--primary);
+        }
+
+        .sync-status.syncing { background: #fff3e0; color: var(--warning); }
+        .sync-status.error { background: #ffebee; color: var(--danger); }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            margin-bottom: 15px;
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary), #1976D2);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .sale-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 6px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1976D2;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #757575;
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .sale-item {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="app-container" id="app">
-    <!-- Header -->
-    <header class="app-header">
-      <h1>💧 Water Supply</h1>
-      <div class="header-actions">
-        <div class="sync-indicator" id="syncIndicator">
-          <svg class="sync-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
-          </svg>
-          <span id="syncStatus">Synced</span>
-        </div>
-      </div>
-    </header>
+    <div class="container">
+        <h1>💧 Water Supply Manager</h1>
+        <p class="subtitle">Professional Inventory & Customer Management</p>
 
-    <!-- Inventory Tab -->
-    <div class="tab-content active" id="inventoryTab">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <span class="stat-value" id="stat300ml">0</span>
-          <span class="stat-label">300ml</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-value" id="stat500ml">0</span>
-          <span class="stat-label">500ml</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-value" id="stat1l">0</span>
-          <span class="stat-label">1 Liter</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-value" id="stat20lFilled">0</span>
-          <span class="stat-label">20L Filled</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-value" id="stat20lEmpty">0</span>
-          <span class="stat-label">20L Empty</span>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">Recent Transactions</h2>
-        </div>
-        <div id="transactionsList">
-          <div class="empty-state">
-            <div class="empty-icon">📦</div>
-            <p>No transactions yet</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Customers Tab -->
-    <div class="tab-content" id="customersTab">
-      <div class="search-box">
-        <input type="text" class="search-input" id="customerSearch" placeholder="🔍 Search customers...">
-      </div>
-      <div class="customer-list" id="customerList">
-        <div class="empty-state">
-          <div class="empty-icon">👥</div>
-          <p>No customers yet. Add your first customer!</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Orders Tab -->
-    <div class="tab-content" id="ordersTab">
-      <div class="card" id="orderForm">
-        <div class="form-group">
-          <label class="form-label">Select Customer</label>
-          <select class="form-input" id="orderCustomerSelect">
-            <option value="">Choose a customer...</option>
-          </select>
+        <div id="sync-status" class="sync-status">
+            ✓ Ready
         </div>
 
-        <div id="customerInfoCard" class="card hidden" style="background: var(--color-bg-1);">
-          <div class="customer-name" id="selectedCustomerName"></div>
-          <div class="customer-info" id="selectedCustomerInfo"></div>
+        <div id="message" class="message"></div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('inventory')">📦 Inventory</button>
+            <button class="tab" onclick="switchTab('customers')">👥 Customers</button>
+            <button class="tab" onclick="switchTab('delivery')">🚚 Delivery</button>
         </div>
 
-        <div class="quick-actions">
-          <button class="btn btn-primary" id="saleBtn">💰 Sale</button>
-          <button class="btn btn-secondary" id="returnBtn">↩️ Return</button>
-        </div>
-
-        <div id="saleFormSection" class="hidden">
-          <h3 class="card-title mb-8">Sale Items</h3>
-          
-          <div class="form-group">
-            <label class="form-label">300ml Bottles</label>
-            <div class="quantity-stepper">
-              <button class="stepper-btn" data-product="300ml" data-action="decrease">−</button>
-              <span class="stepper-value" id="qty300ml">0</span>
-              <button class="stepper-btn" data-product="300ml" data-action="increase">+</button>
+        <!-- INVENTORY TAB -->
+        <div id="inventory-tab" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">300ml Bottles</div>
+                    <div class="stat-value" id="stat-300ml">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">500ml Bottles</div>
+                    <div class="stat-value" id="stat-500ml">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">1L Bottles</div>
+                    <div class="stat-value" id="stat-1l">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">20L Filled</div>
+                    <div class="stat-value" id="stat-20l-filled">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">20L Empty</div>
+                    <div class="stat-value" id="stat-20l-empty">0</div>
+                </div>
             </div>
-            <input type="number" class="form-input mt-16" id="price300ml" placeholder="Price per unit" min="0" step="0.01">
-          </div>
 
-          <div class="form-group">
-            <label class="form-label">500ml Bottles</label>
-            <div class="quantity-stepper">
-              <button class="stepper-btn" data-product="500ml" data-action="decrease">−</button>
-              <span class="stepper-value" id="qty500ml">0</span>
-              <button class="stepper-btn" data-product="500ml" data-action="increase">+</button>
+            <div class="card">
+                <h2>Add Stock</h2>
+                <form id="add-stock-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Product</label>
+                            <select id="stock-product" required>
+                                <option value="">Select Product</option>
+                                <option value="300ml">300ml Bottle (₹130/35-pack)</option>
+                                <option value="500ml">500ml Bottle (₹110/24-pack)</option>
+                                <option value="1l">1L Bottle (₹85/12-pack)</option>
+                                <option value="20l_empty">20L Empty Can (₹145 each)</option>
+                                <option value="20l_refill">20L Refill (₹11 each)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantity (Packs/Units)</label>
+                            <input type="number" id="stock-quantity" min="1" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Stock</button>
+                </form>
             </div>
-            <input type="number" class="form-input mt-16" id="price500ml" placeholder="Price per unit" min="0" step="0.01">
-          </div>
+        </div>
 
-          <div class="form-group">
-            <label class="form-label">1L Bottles</label>
-            <div class="quantity-stepper">
-              <button class="stepper-btn" data-product="1l" data-action="decrease">−</button>
-              <span class="stepper-value" id="qty1l">0</span>
-              <button class="stepper-btn" data-product="1l" data-action="increase">+</button>
+        <!-- CUSTOMERS TAB -->
+        <div id="customers-tab" class="tab-content">
+            <div class="card">
+                <h2>Add New Customer</h2>
+                <form id="add-customer-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Name *</label>
+                            <input type="text" id="customer-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Mobile *</label>
+                            <input type="tel" id="customer-mobile" pattern="[0-9]{10}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Shop Name</label>
+                            <input type="text" id="customer-shop">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success">Add Customer</button>
+                </form>
             </div>
-            <input type="number" class="form-input mt-16" id="price1l" placeholder="Price per unit" min="0" step="0.01">
-          </div>
 
-          <div class="form-group">
-            <label class="form-label">20L Cans</label>
-            <div class="quantity-stepper">
-              <button class="stepper-btn" data-product="20l" data-action="decrease">−</button>
-              <span class="stepper-value" id="qty20l">0</span>
-              <button class="stepper-btn" data-product="20l" data-action="increase">+</button>
+            <div class="card">
+                <h2>Customer List</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Mobile</th>
+                            <th>Shop</th>
+                            <th>Empty Cans</th>
+                            <th>Total Orders</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customers-body">
+                        <tr><td colspan="5" style="text-align:center">No customers yet</td></tr>
+                    </tbody>
+                </table>
             </div>
-            <input type="number" class="form-input mt-16" id="price20l" placeholder="Price per unit" min="0" step="0.01">
-          </div>
-
-          <div class="sticky-total hidden" id="stickyTotal">
-            <span class="total-label">Total Amount:</span>
-            <span class="total-value" id="totalAmount">₹0</span>
-          </div>
-
-          <button class="btn btn-primary btn-block mt-16" id="completeSaleBtn">Complete Sale</button>
         </div>
-      </div>
 
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">Recent Orders</h2>
+        <!-- DELIVERY TAB -->
+        <div id="delivery-tab" class="tab-content">
+            <div class="card">
+                <h2>Select Customer</h2>
+                <div class="form-group">
+                    <label>Customer</label>
+                    <select id="delivery-customer" onchange="loadCustomerInfo()">
+                        <option value="">-- Select Customer --</option>
+                    </select>
+                </div>
+                <div id="customer-info" style="display:none; margin-top:15px; padding:15px; background:#f9f9f9; border-radius:6px;">
+                    <p><strong>Empty Cans:</strong> <span id="info-empty-cans">0</span></p>
+                    <p><strong>Total Orders:</strong> <span id="info-total-orders">0</span></p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Empty Can Return</h2>
+                <form id="return-form">
+                    <div class="form-group">
+                        <label>Empty Cans Returned</label>
+                        <input type="number" id="return-quantity" min="1" value="0">
+                    </div>
+                    <button type="submit" class="btn btn-secondary">Process Return</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>New Sale</h2>
+                <form id="sale-form">
+                    <!-- 300ml -->
+                    <div class="sale-item">
+                        <div class="form-group">
+                            <label>300ml Bottles</label>
+                            <input type="number" id="sale-300ml" min="0" value="0" oninput="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Price (₹)</label>
+                            <input type="number" id="price-300ml" step="0.01" value="5.00" oninput="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Subtotal</label>
+                            <input type="text" id="subtotal-300ml" readonly style="background:#e9ecef; font-weight:bold;">
+                        </div>
+                    </div>
+
+                    <!-- 500ml -->
+                    <div class="sale-item">
+                        <div class="form-group">
+                            <label>500ml Bottles</label>
+                            <input type="number" id="sale-500ml" min="0" value="0" oninput="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Price (₹)</label>
+                            <input type="number" id="price-500ml" step="0.01" value="7.00" oninput="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Subtotal</label>
+                            <input type="text" id="subtotal-500ml" readonly style="background:#e9ecef; font-weight:bold;">
+                        </div>
+                    </div>
+
+                    <!-- 1L -->
+                    <div class="sale-item">
+                        <div class="form-group">
+                            <label>1L Bottles</label>
+                            <input type="number" id="sale-1l" min="0" value="0" oninput="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Price (₹)</label>
+                            <input type="number" id="price-1l" step="0.01" value="10.00" oninput="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Subtotal</label>
+                            <input type="text" id="subtotal-1l" readonly style="background:#e9ecef; font-weight:bold;">
+                        </div>
+                    </div>
+
+                    <!-- 20L -->
+                    <div class="sale-item">
+                        <div class="form-group">
+                            <label>20L Cans</label>
+                            <input type="number" id="sale-20l" min="0" value="0" oninput="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Price (₹)</label>
+                            <input type="number" id="price-20l" step="0.01" value="180.00" oninput="calculateTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label>Subtotal</label>
+                            <input type="text" id="subtotal-20l" readonly style="background:#e9ecef; font-weight:bold;">
+                        </div>
+                    </div>
+
+                    <div style="background:#e3f2fd; padding:15px; border-radius:6px; margin:15px 0;">
+                        <h3 style="margin:0;">Total: ₹<span id="total-amount">0.00</span></h3>
+                    </div>
+                    <button type="submit" class="btn btn-success">Complete Sale</button>
+                </form>
+            </div>
         </div>
-        <div id="ordersList">
-          <div class="empty-state">
-            <div class="empty-icon">📋</div>
-            <p>No orders yet</p>
-          </div>
-        </div>
-      </div>
     </div>
 
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-      <button class="nav-item active" data-tab="inventory">
-        <span class="nav-icon">📦</span>
-        <span class="nav-label">Inventory</span>
-      </button>
-      <button class="nav-item" data-tab="customers">
-        <span class="nav-icon">👥</span>
-        <span class="nav-label">Customers</span>
-      </button>
-      <button class="nav-item" data-tab="orders">
-        <span class="nav-icon">📋</span>
-        <span class="nav-label">Orders</span>
-      </button>
-    </nav>
+    <script>
+        // ==========================================
+        // CONFIGURATION - PASTE YOUR URL HERE
+        // ==========================================
+        
+        const CONFIG = {
+            scriptUrl: 'https://script.google.com/macros/s/AKfycby5MtzrIJKek83p81er-sOvjD5m3UTiYA3POecCkQAq2hB40UTDd6VQOQ4rSrXMfZDD/exec',  // ← PASTE YOUR DEPLOYMENT URL HERE
+            syncInterval: 30000,
+            enableSync: true
+        };
 
-    <!-- FAB Buttons -->
-    <button class="fab hidden" id="fabInventory">+</button>
-    <button class="fab hidden" id="fabCustomer">+</button>
-  </div>
+        // ==========================================
+        // STATE
+        // ==========================================
+        
+        let appState = {
+            inventory: {
+                '300ml': 0,
+                '500ml': 0,
+                '1l': 0,
+                '20l_filled': 0,
+                '20l_empty': 0
+            },
+            customers: [],
+            orders: [],
+            transactions: []
+        };
 
-  <!-- Add Stock Modal -->
-  <div class="modal-overlay" id="addStockModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title">Add Stock</h2>
-        <button class="modal-close" id="closeStockModal">×</button>
-      </div>
-      <form id="addStockForm">
-        <div class="form-group">
-          <label class="form-label">Product</label>
-          <select class="form-input" id="stockProduct" required>
-            <option value="">Select product...</option>
-            <option value="300ml">300ml Bottles</option>
-            <option value="500ml">500ml Bottles</option>
-            <option value="1l">1L Bottles</option>
-            <option value="20l_filled">20L Filled Cans</option>
-            <option value="20l_empty">20L Empty Cans</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Quantity</label>
-          <input type="number" class="form-input" id="stockQuantity" min="1" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Cost (Optional)</label>
-          <input type="number" class="form-input" id="stockCost" min="0" step="0.01">
-        </div>
-        <button type="submit" class="btn btn-primary btn-block">Add Stock</button>
-      </form>
-    </div>
-  </div>
+        let uiState = {
+            selectedCustomer: null,
+            saleFormData: {}
+        };
 
-  <!-- Add Customer Modal -->
-  <div class="modal-overlay" id="addCustomerModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title">Add Customer</h2>
-        <button class="modal-close" id="closeCustomerModal">×</button>
-      </div>
-      <form id="addCustomerForm">
-        <div class="form-group">
-          <label class="form-label">Customer Name *</label>
-          <input type="text" class="form-input" id="customerName" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Mobile Number *</label>
-          <input type="tel" class="form-input" id="customerMobile" pattern="[0-9]{10}" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Shop Name</label>
-          <input type="text" class="form-input" id="customerShop">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Empty Cans Count</label>
-          <input type="number" class="form-input" id="customerEmptyCans" min="0" value="0">
-        </div>
-        <button type="submit" class="btn btn-primary btn-block">Add Customer</button>
-      </form>
-    </div>
-  </div>
+        let isSyncing = false;
 
-  <script src="app.js"></script>
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            loadUIState();
+            loadData();
+            setupEventListeners();
+            startAutoSync();
+            calculateTotal();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('add-stock-form').addEventListener('submit', handleAddStock);
+            document.getElementById('add-customer-form').addEventListener('submit', handleAddCustomer);
+            document.getElementById('return-form').addEventListener('submit', handleReturn);
+            document.getElementById('sale-form').addEventListener('submit', handleSale);
+            
+            document.getElementById('delivery-customer').addEventListener('change', saveUIState);
+            
+            const saleInputs = ['sale-300ml', 'sale-500ml', 'sale-1l', 'sale-20l', 
+                               'price-300ml', 'price-500ml', 'price-1l', 'price-20l'];
+            saleInputs.forEach(id => {
+                document.getElementById(id).addEventListener('input', saveUIState);
+            });
+        }
+
+        function startAutoSync() {
+            if (CONFIG.enableSync && CONFIG.scriptUrl !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                setInterval(() => {
+                    if (!isSyncing) {
+                        loadData(true);
+                    }
+                }, CONFIG.syncInterval);
+            }
+        }
+
+        // ==========================================
+        // UI STATE PERSISTENCE
+        // ==========================================
+        
+        function saveUIState() {
+            uiState.selectedCustomer = document.getElementById('delivery-customer').value;
+            uiState.saleFormData = {
+                '300ml_qty': document.getElementById('sale-300ml').value,
+                '500ml_qty': document.getElementById('sale-500ml').value,
+                '1l_qty': document.getElementById('sale-1l').value,
+                '20l_qty': document.getElementById('sale-20l').value,
+                '300ml_price': document.getElementById('price-300ml').value,
+                '500ml_price': document.getElementById('price-500ml').value,
+                '1l_price': document.getElementById('price-1l').value,
+                '20l_price': document.getElementById('price-20l').value
+            };
+            
+            sessionStorage.setItem('uiState', JSON.stringify(uiState));
+        }
+
+        function loadUIState() {
+            const saved = sessionStorage.getItem('uiState');
+            if (saved) {
+                uiState = JSON.parse(saved);
+            }
+        }
+
+        function restoreUIState() {
+            if (uiState.selectedCustomer) {
+                const select = document.getElementById('delivery-customer');
+                select.value = uiState.selectedCustomer;
+                loadCustomerInfo();
+            }
+            
+            if (uiState.saleFormData) {
+                document.getElementById('sale-300ml').value = uiState.saleFormData['300ml_qty'] || 0;
+                document.getElementById('sale-500ml').value = uiState.saleFormData['500ml_qty'] || 0;
+                document.getElementById('sale-1l').value = uiState.saleFormData['1l_qty'] || 0;
+                document.getElementById('sale-20l').value = uiState.saleFormData['20l_qty'] || 0;
+                document.getElementById('price-300ml').value = uiState.saleFormData['300ml_price'] || 5.00;
+                document.getElementById('price-500ml').value = uiState.saleFormData['500ml_price'] || 7.00;
+                document.getElementById('price-1l').value = uiState.saleFormData['1l_price'] || 10.00;
+                document.getElementById('price-20l').value = uiState.saleFormData['20l_price'] || 180.00;
+                
+                calculateTotal();
+            }
+        }
+
+        // ==========================================
+        // DATA SYNC
+        // ==========================================
+        
+        function updateSyncStatus(status, message) {
+            const indicator = document.getElementById('sync-status');
+            indicator.className = 'sync-status';
+            
+            if (status === 'syncing') {
+                indicator.className += ' syncing';
+                indicator.textContent = '⟳ ' + message;
+            } else if (status === 'success') {
+                indicator.textContent = '✓ ' + message;
+            } else if (status === 'error') {
+                indicator.className += ' error';
+                indicator.textContent = '⚠ ' + message;
+            }
+        }
+
+        function loadData(silent = false) {
+            if (isSyncing) return;
+            
+            if (!silent) {
+                updateSyncStatus('syncing', 'Loading...');
+            }
+            
+            isSyncing = true;
+
+            if (CONFIG.enableSync && CONFIG.scriptUrl !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                fetch(`${CONFIG.scriptUrl}?action=loadData`, { cache: 'no-cache' })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success && result.data) {
+                        appState = result.data;
+                        localStorage.setItem('waterSupplyData', JSON.stringify(appState));
+                        refreshUI();
+                        restoreUIState();
+                        if (!silent) {
+                            updateSyncStatus('success', 'Synced with Google Sheets');
+                        }
+                    } else {
+                        loadFromLocalStorage();
+                    }
+                })
+                .catch(error => {
+                    console.error('Sync failed:', error);
+                    loadFromLocalStorage();
+                    updateSyncStatus('error', 'Offline - using local data');
+                })
+                .finally(() => {
+                    isSyncing = false;
+                });
+            } else {
+                loadFromLocalStorage();
+                updateSyncStatus('success', 'Local mode (no sync configured)');
+                isSyncing = false;
+            }
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('waterSupplyData');
+            if (saved) {
+                appState = JSON.parse(saved);
+                refreshUI();
+                restoreUIState();
+            }
+        }
+
+        function saveData() {
+            if (isSyncing) {
+                showMessage('Sync in progress, please wait...', 'error');
+                return;
+            }
+
+            localStorage.setItem('waterSupplyData', JSON.stringify(appState));
+
+            if (CONFIG.enableSync && CONFIG.scriptUrl !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                updateSyncStatus('syncing', 'Saving...');
+                isSyncing = true;
+
+                fetch(CONFIG.scriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({
+                        action: 'saveData',
+                        data: appState
+                    })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        updateSyncStatus('success', 'Saved to Google Sheets');
+                        showMessage('✓ Data saved successfully', 'success');
+                    } else {
+                        updateSyncStatus('error', 'Save failed - stored locally');
+                        showMessage('Saved locally only', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Save failed:', error);
+                    updateSyncStatus('error', 'Offline - stored locally');
+                    showMessage('Saved locally only', 'error');
+                })
+                .finally(() => {
+                    isSyncing = false;
+                });
+            } else {
+                showMessage('Data saved locally', 'success');
+            }
+        }
+
+        // ==========================================
+        // UI FUNCTIONS
+        // ==========================================
+        
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+
+            if (tabName === 'delivery') {
+                loadCustomerDropdown();
+                restoreUIState();
+            }
+        }
+
+        function refreshUI() {
+            updateInventoryStats();
+            updateCustomersTable();
+            loadCustomerDropdown();
+        }
+
+        function updateInventoryStats() {
+            document.getElementById('stat-300ml').textContent = appState.inventory['300ml'];
+            document.getElementById('stat-500ml').textContent = appState.inventory['500ml'];
+            document.getElementById('stat-1l').textContent = appState.inventory['1l'];
+            document.getElementById('stat-20l-filled').textContent = appState.inventory['20l_filled'];
+            document.getElementById('stat-20l-empty').textContent = appState.inventory['20l_empty'];
+        }
+
+        function updateCustomersTable() {
+            const tbody = document.getElementById('customers-body');
+            if (appState.customers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">No customers yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = appState.customers.map(c => `
+                <tr>
+                    <td>${c.name}</td>
+                    <td>${c.mobile}</td>
+                    <td>${c.shopName || '-'}</td>
+                    <td>${c.emptyCans}</td>
+                    <td>${c.totalOrders}</td>
+                </tr>
+            `).join('');
+        }
+
+        function loadCustomerDropdown() {
+            const select = document.getElementById('delivery-customer');
+            const currentValue = select.value;
+            
+            select.innerHTML = '<option value="">-- Select Customer --</option>';
+            appState.customers.forEach(c => {
+                select.innerHTML += `<option value="${c.mobile}">${c.name} (${c.mobile})</option>`;
+            });
+            
+            if (currentValue) {
+                select.value = currentValue;
+            }
+        }
+
+        function loadCustomerInfo() {
+            const mobile = document.getElementById('delivery-customer').value;
+            const infoDiv = document.getElementById('customer-info');
+            
+            if (!mobile) {
+                infoDiv.style.display = 'none';
+                return;
+            }
+
+            const customer = appState.customers.find(c => c.mobile === mobile);
+            if (customer) {
+                document.getElementById('info-empty-cans').textContent = customer.emptyCans;
+                document.getElementById('info-total-orders').textContent = customer.totalOrders;
+                infoDiv.style.display = 'block';
+            }
+            
+            saveUIState();
+        }
+
+        function showMessage(text, type = 'success') {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = `message ${type} show`;
+            setTimeout(() => msg.classList.remove('show'), 3000);
+        }
+
+        function calculateTotal() {
+            const q300 = parseInt(document.getElementById('sale-300ml').value) || 0;
+            const q500 = parseInt(document.getElementById('sale-500ml').value) || 0;
+            const q1l = parseInt(document.getElementById('sale-1l').value) || 0;
+            const q20l = parseInt(document.getElementById('sale-20l').value) || 0;
+
+            const p300 = parseFloat(document.getElementById('price-300ml').value) || 0;
+            const p500 = parseFloat(document.getElementById('price-500ml').value) || 0;
+            const p1l = parseFloat(document.getElementById('price-1l').value) || 0;
+            const p20l = parseFloat(document.getElementById('price-20l').value) || 0;
+
+            const s300 = q300 * p300;
+            const s500 = q500 * p500;
+            const s1l = q1l * p1l;
+            const s20l = q20l * p20l;
+
+            document.getElementById('subtotal-300ml').value = s300 > 0 ? `₹${s300.toFixed(2)}` : '';
+            document.getElementById('subtotal-500ml').value = s500 > 0 ? `₹${s500.toFixed(2)}` : '';
+            document.getElementById('subtotal-1l').value = s1l > 0 ? `₹${s1l.toFixed(2)}` : '';
+            document.getElementById('subtotal-20l').value = s20l > 0 ? `₹${s20l.toFixed(2)}` : '';
+
+            document.getElementById('total-amount').textContent = (s300 + s500 + s1l + s20l).toFixed(2);
+        }
+
+        // ==========================================
+        // BUSINESS LOGIC
+        // ==========================================
+        
+        function handleAddStock(e) {
+            e.preventDefault();
+            
+            const product = document.getElementById('stock-product').value;
+            const quantity = parseInt(document.getElementById('stock-quantity').value);
+
+            const STOCK_PRICES = {
+                '300ml': { buyingPrice: 130, packSize: 35 },
+                '500ml': { buyingPrice: 110, packSize: 24 },
+                '1l': { buyingPrice: 85, packSize: 12 },
+                '20l_empty': { buyingPrice: 145, packSize: 1 },
+                '20l_refill': { buyingPrice: 11, packSize: 1 }
+            };
+
+            const priceInfo = STOCK_PRICES[product];
+            let unitsToAdd = quantity * priceInfo.packSize;
+            let cost = quantity * priceInfo.buyingPrice;
+
+            if (product === '20l_refill') {
+                if (appState.inventory['20l_empty'] < quantity) {
+                    showMessage('Not enough empty cans to refill', 'error');
+                    return;
+                }
+                appState.inventory['20l_empty'] -= quantity;
+                appState.inventory['20l_filled'] += quantity;
+            } else if (product === '20l_empty') {
+                appState.inventory['20l_empty'] += quantity;
+            } else {
+                appState.inventory[product] += unitsToAdd;
+            }
+
+            appState.transactions.push({
+                date: new Date().toISOString(),
+                product: product,
+                type: product === '20l_refill' ? 'refill' : 'add',
+                quantity: quantity,
+                cost: cost
+            });
+
+            saveData();
+            refreshUI();
+            e.target.reset();
+            showMessage(`Added ${quantity} ${product}`, 'success');
+        }
+
+        function handleAddCustomer(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('customer-name').value.trim();
+            const mobile = document.getElementById('customer-mobile').value.trim();
+            const shopName = document.getElementById('customer-shop').value.trim();
+
+            if (appState.customers.find(c => c.mobile === mobile)) {
+                showMessage('Customer already exists', 'error');
+                return;
+            }
+
+            appState.customers.push({
+                name,
+                mobile,
+                shopName,
+                emptyCans: 0,
+                cansReturned: 0,
+                totalOrders: 0,
+                purchases: { '300ml': 0, '500ml': 0, '1l': 0, '20l': 0 },
+                createdDate: new Date().toISOString()
+            });
+
+            saveData();
+            refreshUI();
+            e.target.reset();
+            showMessage('Customer added', 'success');
+        }
+
+        function handleReturn(e) {
+            e.preventDefault();
+
+            const mobile = document.getElementById('delivery-customer').value;
+            const quantity = parseInt(document.getElementById('return-quantity').value) || 0;
+
+            if (!mobile || quantity <= 0) {
+                showMessage('Select customer and enter quantity', 'error');
+                return;
+            }
+
+            const customer = appState.customers.find(c => c.mobile === mobile);
+            if (!customer || customer.emptyCans < quantity) {
+                showMessage('Invalid return', 'error');
+                return;
+            }
+
+            customer.emptyCans -= quantity;
+            customer.cansReturned += quantity;
+            appState.inventory['20l_empty'] += quantity;
+
+            saveData();
+            refreshUI();
+            restoreUIState();
+            document.getElementById('return-quantity').value = 0;
+            showMessage(`${quantity} cans returned`, 'success');
+        }
+
+        function handleSale(e) {
+            e.preventDefault();
+
+            const mobile = document.getElementById('delivery-customer').value;
+            const q300 = parseInt(document.getElementById('sale-300ml').value) || 0;
+            const q500 = parseInt(document.getElementById('sale-500ml').value) || 0;
+            const q1l = parseInt(document.getElementById('sale-1l').value) || 0;
+            const q20l = parseInt(document.getElementById('sale-20l').value) || 0;
+
+            const p300 = parseFloat(document.getElementById('price-300ml').value) || 0;
+            const p500 = parseFloat(document.getElementById('price-500ml').value) || 0;
+            const p1l = parseFloat(document.getElementById('price-1l').value) || 0;
+            const p20l = parseFloat(document.getElementById('price-20l').value) || 0;
+
+            if (!mobile || (q300 === 0 && q500 === 0 && q1l === 0 && q20l === 0)) {
+                showMessage('Select customer and products', 'error');
+                return;
+            }
+
+            if (q300 > appState.inventory['300ml'] || q500 > appState.inventory['500ml'] ||
+                q1l > appState.inventory['1l'] || q20l > appState.inventory['20l_filled']) {
+                showMessage('Insufficient stock', 'error');
+                return;
+            }
+
+            const customer = appState.customers.find(c => c.mobile === mobile);
+            if (!customer) {
+                showMessage('Customer not found', 'error');
+                return;
+            }
+
+            let total = 0;
+            let items = [];
+
+            if (q300 > 0) {
+                total += q300 * p300;
+                items.push(`${q300}x 300ml @ ₹${p300}`);
+                appState.inventory['300ml'] -= q300;
+                customer.purchases['300ml'] += q300;
+            }
+            if (q500 > 0) {
+                total += q500 * p500;
+                items.push(`${q500}x 500ml @ ₹${p500}`);
+                appState.inventory['500ml'] -= q500;
+                customer.purchases['500ml'] += q500;
+            }
+            if (q1l > 0) {
+                total += q1l * p1l;
+                items.push(`${q1l}x 1L @ ₹${p1l}`);
+                appState.inventory['1l'] -= q1l;
+                customer.purchases['1l'] += q1l;
+            }
+            if (q20l > 0) {
+                total += q20l * p20l;
+                items.push(`${q20l}x 20L @ ₹${p20l}`);
+                appState.inventory['20l_filled'] -= q20l;
+                customer.purchases['20l'] += q20l;
+                customer.emptyCans += q20l;
+            }
+
+            customer.totalOrders++;
+
+            appState.orders.push({
+                date: new Date().toISOString(),
+                customer: customer.name,
+                type: 'sale',
+                items: items.join(', '),
+                amount: total
+            });
+
+            saveData();
+            refreshUI();
+            restoreUIState();
+            
+            document.getElementById('sale-300ml').value = 0;
+            document.getElementById('sale-500ml').value = 0;
+            document.getElementById('sale-1l').value = 0;
+            document.getElementById('sale-20l').value = 0;
+            calculateTotal();
+            saveUIState();
+
+            showMessage(`Sale completed! Total: ₹${total.toFixed(2)}`, 'success');
+        }
+    </script>
 </body>
 </html>
