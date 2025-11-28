@@ -2,18 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💧 Water Supply Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>EcoExpress Logistics</title>
     <style>
         :root {
-            --primary: #2196F3;
-            --success: #4CAF50;
-            --danger: #f44336;
-            --warning: #ff9800;
-            --bg: #f5f5f5;
-            --card: #ffffff;
-            --text: #333;
-            --border: #ddd;
+            --primary: #22C55E;
+            --primary-dark: #16A34A;
+            --secondary: #64748B;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --bg: #F8FAFC;
+            --card: #FFFFFF;
+            --border: #E2E8F0;
+            --text: #1E293B;
+            --text-light: #64748B;
         }
 
         * {
@@ -22,168 +25,171 @@
             box-sizing: border-box;
         }
 
-        body {
+        html, body {
+            width: 100%;
+            height: 100%;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg);
             color: var(--text);
-            line-height: 1.6;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+        body {
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        h1 {
-            text-align: center;
-            color: var(--primary);
-            margin-bottom: 10px;
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 20px;
-            font-size: 14px;
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        .logo {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .header-title {
+            flex: 1;
+            font-size: 18px;
+            font-weight: 600;
         }
 
         .sync-status {
-            text-align: center;
-            padding: 10px;
-            background: #e3f2fd;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            color: var(--primary);
+            font-size: 12px;
+            opacity: 0.9;
         }
 
-        .sync-status.syncing { background: #fff3e0; color: var(--warning); }
-        .sync-status.error { background: #ffebee; color: var(--danger); }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .tab {
+        /* CONTENT AREA */
+        .content {
             flex: 1;
-            padding: 12px;
-            border: none;
-            background: transparent;
+            overflow-y: auto;
+            padding: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* TAB NAVIGATION */
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 0 16px;
+            overflow-x: auto;
+            margin-bottom: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-tab {
+            flex-shrink: 0;
+            padding: 10px 16px;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 8px;
             cursor: pointer;
-            border-radius: 6px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 500;
+            color: var(--text-light);
             transition: all 0.3s;
         }
 
-        .tab.active {
+        .nav-tab.active {
             background: var(--primary);
             color: white;
+            border-color: var(--primary);
         }
 
+        /* TAB CONTENT */
         .tab-content {
             display: none;
         }
 
         .tab-content.active {
             display: block;
+            animation: fadeIn 0.3s;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* CARDS & FORMS */
         .card {
             background: var(--card);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
         }
 
-        .card h2 {
-            margin-bottom: 15px;
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
             color: var(--primary);
-            font-size: 20px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, var(--primary), #1976D2);
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-        }
-
-        .stat-label {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: bold;
-            margin-top: 5px;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
+            font-size: 13px;
             font-weight: 500;
-            color: #555;
-            font-size: 14px;
+            color: var(--text);
+            margin-bottom: 6px;
         }
 
-        input, select {
+        input, select, textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid var(--border);
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 14px;
+            font-family: inherit;
         }
 
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(34,197,94,0.1);
         }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .sale-item {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-            padding: 15px;
-            background: #f9f9f9;
-            border-radius: 6px;
-        }
-
+        /* BUTTONS */
         .btn {
-            padding: 12px 24px;
+            padding: 12px 16px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .btn-primary {
@@ -191,809 +197,749 @@
             color: white;
         }
 
-        .btn-primary:hover {
-            background: #1976D2;
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
+        .btn-primary:active {
+            background: var(--primary-dark);
         }
 
         .btn-secondary {
-            background: #757575;
+            background: var(--secondary);
             color: white;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        th {
-            background: var(--primary);
+        .btn-danger {
+            background: var(--danger);
             color: white;
         }
 
-        .message {
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 13px;
+            width: auto;
+        }
+
+        /* STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(34,197,94,0.2);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* TABLES & LISTS */
+        .list-item {
+            background: var(--card);
             padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-item-title {
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .list-item-subtitle {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
             border-radius: 6px;
-            margin-bottom: 15px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(16,185,129,0.2);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: rgba(245,158,11,0.2);
+            color: var(--warning);
+        }
+
+        /* ALERTS */
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 14px;
             display: none;
         }
 
-        .message.show {
+        .alert.show {
             display: block;
         }
 
-        .message.success {
-            background: #d4edda;
-            color: #155724;
+        .alert-success {
+            background: rgba(16,185,129,0.2);
+            color: var(--success);
+            border-left: 4px solid var(--success);
         }
 
-        .message.error {
-            background: #f8d7da;
-            color: #721c24;
+        .alert-error {
+            background: rgba(239,68,68,0.2);
+            color: var(--danger);
+            border-left: 4px solid var(--danger);
         }
 
-        @media (max-width: 768px) {
-            .sale-item {
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--primary);
+        }
+
+        .modal-close {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        /* BOTTOM NAV */
+        .bottom-nav {
+            display: flex;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 100%;
+            flex-shrink: 0;
+        }
+
+        .nav-item {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 11px;
+            color: var(--text-light);
+            border-top: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            border-top-color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 360px) {
+            .stats-grid {
                 grid-template-columns: 1fr;
             }
+        }
+
+        /* BOTTOM NAV SPACING */
+        .bottom-spacer {
+            height: 80px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>💧 Water Supply Manager</h1>
-        <p class="subtitle">Professional Inventory & Customer Management</p>
-
-        <div id="sync-status" class="sync-status">
-            ✓ Ready
+    <div class="app-container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo">🌿</div>
+            <div class="header-title">EcoExpress</div>
+            <div class="sync-status" id="syncStatus">● Synced</div>
         </div>
 
-        <div id="message" class="message"></div>
+        <!-- CONTENT -->
+        <div class="content">
+            <div id="alert" class="alert"></div>
 
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('inventory')">📦 Inventory</button>
-            <button class="tab" onclick="switchTab('customers')">👥 Customers</button>
-            <button class="tab" onclick="switchTab('delivery')">🚚 Delivery</button>
-        </div>
-
-        <!-- INVENTORY TAB -->
-        <div id="inventory-tab" class="tab-content active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">300ml Bottles</div>
-                    <div class="stat-value" id="stat-300ml">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">500ml Bottles</div>
-                    <div class="stat-value" id="stat-500ml">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">1L Bottles</div>
-                    <div class="stat-value" id="stat-1l">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">20L Filled</div>
-                    <div class="stat-value" id="stat-20l-filled">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">20L Empty</div>
-                    <div class="stat-value" id="stat-20l-empty">0</div>
-                </div>
+            <!-- TAB NAVIGATION -->
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+                <button class="nav-tab" onclick="switchTab('inventory')">📦 Inventory</button>
+                <button class="nav-tab" onclick="switchTab('customers')">👥 Customers</button>
+                <button class="nav-tab" onclick="switchTab('orders')">📋 Orders</button>
+                <button class="nav-tab" onclick="switchTab('invoices')">💰 Invoices</button>
             </div>
 
-            <div class="card">
-                <h2>Add Stock</h2>
-                <form id="add-stock-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Product</label>
-                            <select id="stock-product" required>
-                                <option value="">Select Product</option>
-                                <option value="300ml">300ml Bottle (₹130/35-pack)</option>
-                                <option value="500ml">500ml Bottle (₹110/24-pack)</option>
-                                <option value="1l">1L Bottle (₹85/12-pack)</option>
-                                <option value="20l_empty">20L Empty Can (₹145 each)</option>
-                                <option value="20l_refill">20L Refill (₹11 each)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Quantity (Packs/Units)</label>
-                            <input type="number" id="stock-quantity" min="1" required>
-                        </div>
+            <!-- DASHBOARD TAB -->
+            <div id="dashboard-tab" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Revenue</div>
+                        <div class="stat-value">₹<span id="totalRevenue">0</span></div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Add Stock</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- CUSTOMERS TAB -->
-        <div id="customers-tab" class="tab-content">
-            <div class="card">
-                <h2>Add New Customer</h2>
-                <form id="add-customer-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Name *</label>
-                            <input type="text" id="customer-name" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Mobile *</label>
-                            <input type="tel" id="customer-mobile" pattern="[0-9]{10}" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Shop Name</label>
-                            <input type="text" id="customer-shop">
-                        </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Profit</div>
+                        <div class="stat-value">₹<span id="totalProfit">0</span></div>
                     </div>
-                    <button type="submit" class="btn btn-success">Add Customer</button>
-                </form>
-            </div>
-
-            <div class="card">
-                <h2>Customer List</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Mobile</th>
-                            <th>Shop</th>
-                            <th>Empty Cans</th>
-                            <th>Total Orders</th>
-                        </tr>
-                    </thead>
-                    <tbody id="customers-body">
-                        <tr><td colspan="5" style="text-align:center">No customers yet</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- DELIVERY TAB -->
-        <div id="delivery-tab" class="tab-content">
-            <div class="card">
-                <h2>Select Customer</h2>
-                <div class="form-group">
-                    <label>Customer</label>
-                    <select id="delivery-customer" onchange="loadCustomerInfo()">
-                        <option value="">-- Select Customer --</option>
-                    </select>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Orders</div>
+                        <div class="stat-value"><span id="totalOrders">0</span></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Profit Margin</div>
+                        <div class="stat-value"><span id="profitMargin">0</span>%</div>
+                    </div>
                 </div>
-                <div id="customer-info" style="display:none; margin-top:15px; padding:15px; background:#f9f9f9; border-radius:6px;">
-                    <p><strong>Empty Cans:</strong> <span id="info-empty-cans">0</span></p>
-                    <p><strong>Total Orders:</strong> <span id="info-total-orders">0</span></p>
+
+                <div class="card">
+                    <div class="card-title">Product Performance</div>
+                    <div id="productMetrics"></div>
                 </div>
+
+                <div class="card">
+                    <div class="card-title">Top Customers</div>
+                    <div id="topCustomers"></div>
+                </div>
+
+                <div class="bottom-spacer"></div>
             </div>
 
-            <div class="card">
-                <h2>Empty Can Return</h2>
-                <form id="return-form">
+            <!-- INVENTORY TAB -->
+            <div id="inventory-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-title">Current Stock</div>
+                    <div id="inventoryList"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Add Stock</div>
                     <div class="form-group">
-                        <label>Empty Cans Returned</label>
-                        <input type="number" id="return-quantity" min="1" value="0">
+                        <label>Product</label>
+                        <select id="stockProduct">
+                            <option value="">Select Product</option>
+                            <option value="300ml">300ml Bottle</option>
+                            <option value="500ml">500ml Bottle</option>
+                            <option value="1l">1L Bottle</option>
+                            <option value="2l">2L Bottle</option>
+                            <option value="20l_empty">20L Empty Can</option>
+                            <option value="20l_filled">20L Filled Can</option>
+                        </select>
                     </div>
-                    <button type="submit" class="btn btn-secondary">Process Return</button>
-                </form>
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="stockQty" min="1" value="1">
+                    </div>
+                    <button class="btn btn-primary" onclick="addStock()">Add Stock</button>
+                </div>
+
+                <div class="bottom-spacer"></div>
             </div>
 
-            <div class="card">
-                <h2>New Sale</h2>
-                <form id="sale-form">
-                    <!-- 300ml -->
-                    <div class="sale-item">
-                        <div class="form-group">
-                            <label>300ml Bottles</label>
-                            <input type="number" id="sale-300ml" min="0" value="0" oninput="calculateTotal()">
-                        </div>
-                        <div class="form-group">
-                            <label>Price (₹)</label>
-                            <input type="number" id="price-300ml" step="0.01" value="5.00" oninput="calculateTotal()">
-                        </div>
-                        <div class="form-group">
-                            <label>Subtotal</label>
-                            <input type="text" id="subtotal-300ml" readonly style="background:#e9ecef; font-weight:bold;">
-                        </div>
+            <!-- CUSTOMERS TAB -->
+            <div id="customers-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-title">Add Customer</div>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="customerName" placeholder="Customer name">
                     </div>
+                    <div class="form-group">
+                        <label>Mobile</label>
+                        <input type="tel" id="customerMobile" placeholder="10-digit mobile">
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea id="customerAddress" placeholder="Address" rows="2"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="addCustomer()">Add Customer</button>
+                </div>
 
-                    <!-- 500ml -->
-                    <div class="sale-item">
-                        <div class="form-group">
-                            <label>500ml Bottles</label>
-                            <input type="number" id="sale-500ml" min="0" value="0" oninput="calculateTotal()">
-                        </div>
-                        <div class="form-group">
-                            <label>Price (₹)</label>
-                            <input type="number" id="price-500ml" step="0.01" value="7.00" oninput="calculateTotal()">
-                        </div>
-                        <div class="form-group">
-                            <label>Subtotal</label>
-                            <input type="text" id="subtotal-500ml" readonly style="background:#e9ecef; font-weight:bold;">
-                        </div>
-                    </div>
+                <div class="card">
+                    <div class="card-title">Customers</div>
+                    <div id="customersList"></div>
+                </div>
 
-                    <!-- 1L -->
-                    <div class="sale-item">
-                        <div class="form-group">
-                            <label>1L Bottles</label>
-                            <input type="number" id="sale-1l" min="0" value="0" oninput="calculateTotal()">
-                        </div>
-                        <div class="form-group">
-                            <label>Price (₹)</label>
-                            <input type="number" id="price-1l" step="0.01" value="10.00" oninput="calculateTotal()">
-                        </div>
-                        <div class="form-group">
-                            <label>Subtotal</label>
-                            <input type="text" id="subtotal-1l" readonly style="background:#e9ecef; font-weight:bold;">
-                        </div>
-                    </div>
+                <div class="bottom-spacer"></div>
+            </div>
 
-                    <!-- 20L -->
-                    <div class="sale-item">
-                        <div class="form-group">
-                            <label>20L Cans</label>
-                            <input type="number" id="sale-20l" min="0" value="0" oninput="calculateTotal()">
-                        </div>
-                        <div class="form-group">
-                            <label>Price (₹)</label>
-                            <input type="number" id="price-20l" step="0.01" value="180.00" oninput="calculateTotal()">
-                        </div>
-                        <div class="form-group">
-                            <label>Subtotal</label>
-                            <input type="text" id="subtotal-20l" readonly style="background:#e9ecef; font-weight:bold;">
-                        </div>
+            <!-- ORDERS TAB -->
+            <div id="orders-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-title">Create Order</div>
+                    <div class="form-group">
+                        <label>Customer</label>
+                        <select id="orderCustomer">
+                            <option value="">Select Customer</option>
+                        </select>
                     </div>
+                    <div class="form-group">
+                        <label>Order Type</label>
+                        <select id="orderType">
+                            <option value="Warehouse">Warehouse Pickup</option>
+                            <option value="Direct Factory">Direct Factory Delivery</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Product</label>
+                        <select id="orderProduct">
+                            <option value="">Select Product</option>
+                            <option value="300ml">300ml Bottle</option>
+                            <option value="500ml">500ml Bottle</option>
+                            <option value="1l">1L Bottle</option>
+                            <option value="2l">2L Bottle</option>
+                            <option value="20l_filled">20L Filled Can</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="orderQty" min="1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Selling Price (₹)</label>
+                        <input type="number" id="orderPrice" min="0" step="0.01" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Driver Name</label>
+                        <input type="text" id="orderDriver" placeholder="Driver name">
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Method</label>
+                        <select id="orderPayment">
+                            <option value="Cash">Cash</option>
+                            <option value="Online">Online</option>
+                            <option value="Credit">Credit</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="createOrder()">Create Order</button>
+                </div>
 
-                    <div style="background:#e3f2fd; padding:15px; border-radius:6px; margin:15px 0;">
-                        <h3 style="margin:0;">Total: ₹<span id="total-amount">0.00</span></h3>
-                    </div>
-                    <button type="submit" class="btn btn-success">Complete Sale</button>
-                </form>
+                <div class="card">
+                    <div class="card-title">Recent Orders</div>
+                    <div id="ordersList"></div>
+                </div>
+
+                <div class="bottom-spacer"></div>
+            </div>
+
+            <!-- INVOICES TAB -->
+            <div id="invoices-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-title">Invoices</div>
+                    <div id="invoicesList"></div>
+                </div>
+
+                <div class="bottom-spacer"></div>
             </div>
         </div>
     </div>
 
+    <!-- BOTTOM NAVIGATION -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('dashboard'); updateNavActive('dashboard')">
+            <div class="nav-icon">📊</div>
+            <div>Dashboard</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('inventory'); updateNavActive('inventory')">
+            <div class="nav-icon">📦</div>
+            <div>Inventory</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('customers'); updateNavActive('customers')">
+            <div class="nav-icon">👥</div>
+            <div>Customers</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('orders'); updateNavActive('orders')">
+            <div class="nav-icon">📋</div>
+            <div>Orders</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('invoices'); updateNavActive('invoices')">
+            <div class="nav-icon">💰</div>
+            <div>Invoices</div>
+        </div>
+    </div>
+
     <script>
-        // ==========================================
-        // CONFIGURATION - PASTE YOUR URL HERE
-        // ==========================================
-        
+        // ============================================================================
+        // CONFIGURATION
+        // ============================================================================
+
         const CONFIG = {
-            scriptUrl: 'https://script.google.com/macros/s/AKfycbwqgMpnY2qIHpBLOHHbS4e6HJArSevSecIGG14bdGnoW9d-DELIWiQDl7-Hf5oQLkB2/exec',  // ← PASTE YOUR DEPLOYMENT URL HERE
+            scriptUrl: 'https://script.google.com/macros/s/AKfycbxSWkvmNpt1_My3n0_eYVPgE0F-2-p7Gmwe-AoEF-GyOi6byTwFl3_A1jm7aisFnOW0/exec',
             syncInterval: 30000,
-            enableSync: true
+            products: {
+                '300ml': { name: '300ml Bottle', cost: 130/35 },
+                '500ml': { name: '500ml Bottle', cost: 110/24 },
+                '1l': { name: '1L Bottle', cost: 85/12 },
+                '2l': { name: '2L Bottle', cost: 110/9 },
+                '20l_empty': { name: '20L Empty Can', cost: 145 },
+                '20l_filled': { name: '20L Filled Can', cost: 156 }
+            }
         };
 
-        // ==========================================
-        // STATE
-        // ==========================================
-        
+        // ============================================================================
+        // STATE MANAGEMENT
+        // ============================================================================
+
         let appState = {
-            inventory: {
-                '300ml': 0,
-                '500ml': 0,
-                '1l': 0,
-                '20l_filled': 0,
-                '20l_empty': 0
-            },
+            inventory: {},
             customers: [],
             orders: [],
-            transactions: []
+            invoices: [],
+            financials: {}
         };
 
-        let uiState = {
-            selectedCustomer: null,
-            saleFormData: {}
-        };
-
-        let isSyncing = false;
-
-        // ==========================================
+        // ============================================================================
         // INITIALIZATION
-        // ==========================================
-        
+        // ============================================================================
+
         window.addEventListener('DOMContentLoaded', () => {
-            loadUIState();
             loadData();
-            setupEventListeners();
-            startAutoSync();
-            calculateTotal();
+            setInterval(() => loadData(true), CONFIG.syncInterval);
         });
 
-        function setupEventListeners() {
-            document.getElementById('add-stock-form').addEventListener('submit', handleAddStock);
-            document.getElementById('add-customer-form').addEventListener('submit', handleAddCustomer);
-            document.getElementById('return-form').addEventListener('submit', handleReturn);
-            document.getElementById('sale-form').addEventListener('submit', handleSale);
-            
-            document.getElementById('delivery-customer').addEventListener('change', saveUIState);
-            
-            const saleInputs = ['sale-300ml', 'sale-500ml', 'sale-1l', 'sale-20l', 
-                               'price-300ml', 'price-500ml', 'price-1l', 'price-20l'];
-            saleInputs.forEach(id => {
-                document.getElementById(id).addEventListener('input', saveUIState);
-            });
-        }
-
-        function startAutoSync() {
-            if (CONFIG.enableSync && CONFIG.scriptUrl !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-                setInterval(() => {
-                    if (!isSyncing) {
-                        loadData(true);
-                    }
-                }, CONFIG.syncInterval);
-            }
-        }
-
-        // ==========================================
-        // UI STATE PERSISTENCE
-        // ==========================================
-        
-        function saveUIState() {
-            uiState.selectedCustomer = document.getElementById('delivery-customer').value;
-            uiState.saleFormData = {
-                '300ml_qty': document.getElementById('sale-300ml').value,
-                '500ml_qty': document.getElementById('sale-500ml').value,
-                '1l_qty': document.getElementById('sale-1l').value,
-                '20l_qty': document.getElementById('sale-20l').value,
-                '300ml_price': document.getElementById('price-300ml').value,
-                '500ml_price': document.getElementById('price-500ml').value,
-                '1l_price': document.getElementById('price-1l').value,
-                '20l_price': document.getElementById('price-20l').value
-            };
-            
-            sessionStorage.setItem('uiState', JSON.stringify(uiState));
-        }
-
-        function loadUIState() {
-            const saved = sessionStorage.getItem('uiState');
-            if (saved) {
-                uiState = JSON.parse(saved);
-            }
-        }
-
-        function restoreUIState() {
-            if (uiState.selectedCustomer) {
-                const select = document.getElementById('delivery-customer');
-                select.value = uiState.selectedCustomer;
-                loadCustomerInfo();
-            }
-            
-            if (uiState.saleFormData) {
-                document.getElementById('sale-300ml').value = uiState.saleFormData['300ml_qty'] || 0;
-                document.getElementById('sale-500ml').value = uiState.saleFormData['500ml_qty'] || 0;
-                document.getElementById('sale-1l').value = uiState.saleFormData['1l_qty'] || 0;
-                document.getElementById('sale-20l').value = uiState.saleFormData['20l_qty'] || 0;
-                document.getElementById('price-300ml').value = uiState.saleFormData['300ml_price'] || 5.00;
-                document.getElementById('price-500ml').value = uiState.saleFormData['500ml_price'] || 7.00;
-                document.getElementById('price-1l').value = uiState.saleFormData['1l_price'] || 10.00;
-                document.getElementById('price-20l').value = uiState.saleFormData['20l_price'] || 180.00;
-                
-                calculateTotal();
-            }
-        }
-
-        // ==========================================
-        // DATA SYNC
-        // ==========================================
-        
-        function updateSyncStatus(status, message) {
-            const indicator = document.getElementById('sync-status');
-            indicator.className = 'sync-status';
-            
-            if (status === 'syncing') {
-                indicator.className += ' syncing';
-                indicator.textContent = '⟳ ' + message;
-            } else if (status === 'success') {
-                indicator.textContent = '✓ ' + message;
-            } else if (status === 'error') {
-                indicator.className += ' error';
-                indicator.textContent = '⚠ ' + message;
-            }
-        }
+        // ============================================================================
+        // DATA OPERATIONS
+        // ============================================================================
 
         function loadData(silent = false) {
-            if (isSyncing) return;
+            if (!silent) showAlert('Loading...', 'info');
             
-            if (!silent) {
-                updateSyncStatus('syncing', 'Loading...');
-            }
-            
-            isSyncing = true;
-
-            if (CONFIG.enableSync && CONFIG.scriptUrl !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-                fetch(`${CONFIG.scriptUrl}?action=loadData`, { cache: 'no-cache' })
-                .then(response => response.json())
+            fetch(`${CONFIG.scriptUrl}?action=loadData`, { cache: 'no-cache' })
+                .then(r => r.json())
                 .then(result => {
-                    if (result.success && result.data) {
+                    if (result.success) {
                         appState = result.data;
-                        localStorage.setItem('waterSupplyData', JSON.stringify(appState));
+                        localStorage.setItem('ecoexpressData', JSON.stringify(appState));
                         refreshUI();
-                        restoreUIState();
-                        if (!silent) {
-                            updateSyncStatus('success', 'Synced with Google Sheets');
-                        }
+                        if (!silent) showAlert('✓ Data synced', 'success');
+                        updateSyncStatus(true);
                     } else {
-                        loadFromLocalStorage();
+                        loadFromLocal();
+                        if (!silent) showAlert('Using local data', 'warning');
+                        updateSyncStatus(false);
                     }
                 })
-                .catch(error => {
-                    console.error('Sync failed:', error);
-                    loadFromLocalStorage();
-                    updateSyncStatus('error', 'Offline - using local data');
-                })
-                .finally(() => {
-                    isSyncing = false;
+                .catch(e => {
+                    console.error('Sync failed:', e);
+                    loadFromLocal();
+                    updateSyncStatus(false);
                 });
-            } else {
-                loadFromLocalStorage();
-                updateSyncStatus('success', 'Local mode (no sync configured)');
-                isSyncing = false;
-            }
         }
 
-        function loadFromLocalStorage() {
-            const saved = localStorage.getItem('waterSupplyData');
+        function loadFromLocal() {
+            const saved = localStorage.getItem('ecoexpressData');
             if (saved) {
                 appState = JSON.parse(saved);
                 refreshUI();
-                restoreUIState();
             }
         }
 
         function saveData() {
-            if (isSyncing) {
-                showMessage('Sync in progress, please wait...', 'error');
-                return;
-            }
-
-            localStorage.setItem('waterSupplyData', JSON.stringify(appState));
-
-            if (CONFIG.enableSync && CONFIG.scriptUrl !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-                updateSyncStatus('syncing', 'Saving...');
-                isSyncing = true;
-
+            localStorage.setItem('ecoexpressData', JSON.stringify(appState));
+            updateSyncStatus(true);
+            
+            if (CONFIG.scriptUrl !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
                 fetch(CONFIG.scriptUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify({
-                        action: 'saveData',
-                        data: appState
+                    body: JSON.stringify({ action: 'saveData', data: appState })
+                })
+                    .then(r => r.json())
+                    .then(result => {
+                        if (result.success) {
+                            appState = result.data;
+                            refreshUI();
+                            showAlert('✓ Saved to Google Sheets', 'success');
+                        }
                     })
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.success) {
-                        updateSyncStatus('success', 'Saved to Google Sheets');
-                        showMessage('✓ Data saved successfully', 'success');
-                    } else {
-                        updateSyncStatus('error', 'Save failed - stored locally');
-                        showMessage('Saved locally only', 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Save failed:', error);
-                    updateSyncStatus('error', 'Offline - stored locally');
-                    showMessage('Saved locally only', 'error');
-                })
-                .finally(() => {
-                    isSyncing = false;
-                });
-            } else {
-                showMessage('Data saved locally', 'success');
+                    .catch(e => {
+                        console.error('Save failed:', e);
+                        showAlert('Saved locally only', 'warning');
+                    });
             }
         }
 
-        // ==========================================
-        // UI FUNCTIONS
-        // ==========================================
-        
+        // ============================================================================
+        // UI OPERATIONS
+        // ============================================================================
+
         function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            event.target.closest('.nav-tab')?.classList.add('active');
+        }
 
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(`${tabName}-tab`).classList.add('active');
+        function updateNavActive(tabName) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            const navItems = document.querySelectorAll('.nav-item');
+            const tabIndex = ['dashboard', 'inventory', 'customers', 'orders', 'invoices'].indexOf(tabName);
+            if (tabIndex >= 0) navItems[tabIndex].classList.add('active');
+        }
 
-            if (tabName === 'delivery') {
-                loadCustomerDropdown();
-                restoreUIState();
-            }
+        function showAlert(message, type = 'success') {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert show alert-${type === 'info' ? 'success' : type}`;
+            setTimeout(() => alert.classList.remove('show'), 3000);
+        }
+
+        function updateSyncStatus(synced) {
+            document.getElementById('syncStatus').textContent = synced ? '● Synced' : '● Offline';
         }
 
         function refreshUI() {
-            updateInventoryStats();
-            updateCustomersTable();
-            loadCustomerDropdown();
+            refreshDashboard();
+            refreshInventory();
+            refreshCustomers();
+            refreshOrders();
+            refreshInvoices();
         }
 
-        function updateInventoryStats() {
-            document.getElementById('stat-300ml').textContent = appState.inventory['300ml'];
-            document.getElementById('stat-500ml').textContent = appState.inventory['500ml'];
-            document.getElementById('stat-1l').textContent = appState.inventory['1l'];
-            document.getElementById('stat-20l-filled').textContent = appState.inventory['20l_filled'];
-            document.getElementById('stat-20l-empty').textContent = appState.inventory['20l_empty'];
+        // ============================================================================
+        // DASHBOARD
+        // ============================================================================
+
+        function refreshDashboard() {
+            const f = appState.financials;
+            document.getElementById('totalRevenue').textContent = parseFloat(f.totalRevenue || 0).toLocaleString('en-IN', {maximumFractionDigits: 0});
+            document.getElementById('totalProfit').textContent = parseFloat(f.totalProfit || 0).toLocaleString('en-IN', {maximumFractionDigits: 0});
+            document.getElementById('totalOrders').textContent = f.totalOrders || 0;
+            document.getElementById('profitMargin').textContent = f.profitMargin || 0;
+
+            // Product Metrics
+            const productMetrics = document.getElementById('productMetrics');
+            const products = Object.keys(f.productMetrics || {}).filter(p => f.productMetrics[p].sold > 0);
+            productMetrics.innerHTML = products.slice(0, 5).map(p => {
+                const m = f.productMetrics[p];
+                return `<div class="list-item"><div><div class="list-item-title">${CONFIG.products[p]?.name}</div><div class="list-item-subtitle">₹${parseFloat(m.profit).toLocaleString('en-IN', {maximumFractionDigits: 0})} profit</div></div><div style="text-align: right;"><div style="font-weight: 600;">${m.sold}</div><div style="font-size: 12px; color: var(--text-light);">units</div></div></div>`;
+            }).join('');
+
+            // Top Customers
+            const topCustomers = document.getElementById('topCustomers');
+            const customers = Object.entries(f.customerMetrics || {}).sort((a, b) => b[1].spent - a[1].spent);
+            topCustomers.innerHTML = customers.slice(0, 5).map(([name, data]) => {
+                return `<div class="list-item"><div><div class="list-item-title">${name}</div><div class="list-item-subtitle">₹${parseFloat(data.spent).toLocaleString('en-IN', {maximumFractionDigits: 0})}</div></div></div>`;
+            }).join('');
         }
 
-        function updateCustomersTable() {
-            const tbody = document.getElementById('customers-body');
-            if (appState.customers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">No customers yet</td></tr>';
+        // ============================================================================
+        // INVENTORY
+        // ============================================================================
+
+        function refreshInventory() {
+            const list = document.getElementById('inventoryList');
+            list.innerHTML = Object.entries(appState.inventory || {}).map(([product, qty]) => {
+                return `<div class="list-item"><div><div class="list-item-title">${CONFIG.products[product]?.name}</div></div><div style="text-align: right;"><strong>${qty}</strong> units</div></div>`;
+            }).join('');
+        }
+
+        function addStock() {
+            const product = document.getElementById('stockProduct').value;
+            const qty = parseInt(document.getElementById('stockQty').value) || 0;
+
+            if (!product || qty <= 0) {
+                showAlert('Please fill all fields', 'warning');
                 return;
             }
 
-            tbody.innerHTML = appState.customers.map(c => `
-                <tr>
-                    <td>${c.name}</td>
-                    <td>${c.mobile}</td>
-                    <td>${c.shopName || '-'}</td>
-                    <td>${c.emptyCans}</td>
-                    <td>${c.totalOrders}</td>
-                </tr>
-            `).join('');
-        }
-
-        function loadCustomerDropdown() {
-            const select = document.getElementById('delivery-customer');
-            const currentValue = select.value;
-            
-            select.innerHTML = '<option value="">-- Select Customer --</option>';
-            appState.customers.forEach(c => {
-                select.innerHTML += `<option value="${c.mobile}">${c.name} (${c.mobile})</option>`;
-            });
-            
-            if (currentValue) {
-                select.value = currentValue;
-            }
-        }
-
-        function loadCustomerInfo() {
-            const mobile = document.getElementById('delivery-customer').value;
-            const infoDiv = document.getElementById('customer-info');
-            
-            if (!mobile) {
-                infoDiv.style.display = 'none';
-                return;
-            }
-
-            const customer = appState.customers.find(c => c.mobile === mobile);
-            if (customer) {
-                document.getElementById('info-empty-cans').textContent = customer.emptyCans;
-                document.getElementById('info-total-orders').textContent = customer.totalOrders;
-                infoDiv.style.display = 'block';
-            }
-            
-            saveUIState();
-        }
-
-        function showMessage(text, type = 'success') {
-            const msg = document.getElementById('message');
-            msg.textContent = text;
-            msg.className = `message ${type} show`;
-            setTimeout(() => msg.classList.remove('show'), 3000);
-        }
-
-        function calculateTotal() {
-            const q300 = parseInt(document.getElementById('sale-300ml').value) || 0;
-            const q500 = parseInt(document.getElementById('sale-500ml').value) || 0;
-            const q1l = parseInt(document.getElementById('sale-1l').value) || 0;
-            const q20l = parseInt(document.getElementById('sale-20l').value) || 0;
-
-            const p300 = parseFloat(document.getElementById('price-300ml').value) || 0;
-            const p500 = parseFloat(document.getElementById('price-500ml').value) || 0;
-            const p1l = parseFloat(document.getElementById('price-1l').value) || 0;
-            const p20l = parseFloat(document.getElementById('price-20l').value) || 0;
-
-            const s300 = q300 * p300;
-            const s500 = q500 * p500;
-            const s1l = q1l * p1l;
-            const s20l = q20l * p20l;
-
-            document.getElementById('subtotal-300ml').value = s300 > 0 ? `₹${s300.toFixed(2)}` : '';
-            document.getElementById('subtotal-500ml').value = s500 > 0 ? `₹${s500.toFixed(2)}` : '';
-            document.getElementById('subtotal-1l').value = s1l > 0 ? `₹${s1l.toFixed(2)}` : '';
-            document.getElementById('subtotal-20l').value = s20l > 0 ? `₹${s20l.toFixed(2)}` : '';
-
-            document.getElementById('total-amount').textContent = (s300 + s500 + s1l + s20l).toFixed(2);
-        }
-
-        // ==========================================
-        // BUSINESS LOGIC
-        // ==========================================
-        
-        function handleAddStock(e) {
-            e.preventDefault();
-            
-            const product = document.getElementById('stock-product').value;
-            const quantity = parseInt(document.getElementById('stock-quantity').value);
-
-            const STOCK_PRICES = {
-                '300ml': { buyingPrice: 130, packSize: 35 },
-                '500ml': { buyingPrice: 110, packSize: 24 },
-                '1l': { buyingPrice: 85, packSize: 12 },
-                '20l_empty': { buyingPrice: 145, packSize: 1 },
-                '20l_refill': { buyingPrice: 11, packSize: 1 }
-            };
-
-            const priceInfo = STOCK_PRICES[product];
-            let unitsToAdd = quantity * priceInfo.packSize;
-            let cost = quantity * priceInfo.buyingPrice;
-
-            if (product === '20l_refill') {
-                if (appState.inventory['20l_empty'] < quantity) {
-                    showMessage('Not enough empty cans to refill', 'error');
-                    return;
-                }
-                appState.inventory['20l_empty'] -= quantity;
-                appState.inventory['20l_filled'] += quantity;
-            } else if (product === '20l_empty') {
-                appState.inventory['20l_empty'] += quantity;
-            } else {
-                appState.inventory[product] += unitsToAdd;
-            }
-
-            appState.transactions.push({
-                date: new Date().toISOString(),
-                product: product,
-                type: product === '20l_refill' ? 'refill' : 'add',
-                quantity: quantity,
-                cost: cost
-            });
-
+            appState.inventory[product] = (appState.inventory[product] || 0) + qty;
             saveData();
-            refreshUI();
-            e.target.reset();
-            showMessage(`Added ${quantity} ${product}`, 'success');
+            document.getElementById('stockQty').value = 1;
+            document.getElementById('stockProduct').value = '';
+            showAlert(`✓ Added ${qty} ${CONFIG.products[product].name}`, 'success');
         }
 
-        function handleAddCustomer(e) {
-            e.preventDefault();
+        // ============================================================================
+        // CUSTOMERS
+        // ============================================================================
 
-            const name = document.getElementById('customer-name').value.trim();
-            const mobile = document.getElementById('customer-mobile').value.trim();
-            const shopName = document.getElementById('customer-shop').value.trim();
+        function refreshCustomers() {
+            const list = document.getElementById('customersList');
+            const customerSelect = document.getElementById('orderCustomer');
+            
+            list.innerHTML = (appState.customers || []).map(c => {
+                return `<div class="list-item"><div><div class="list-item-title">${c.name}</div><div class="list-item-subtitle">${c.mobile}</div></div><div style="text-align: right;"><strong>₹${parseFloat(c.totalSpent || 0).toLocaleString('en-IN', {maximumFractionDigits: 0})}</strong></div></div>`;
+            }).join('');
 
-            if (appState.customers.find(c => c.mobile === mobile)) {
-                showMessage('Customer already exists', 'error');
+            customerSelect.innerHTML = '<option value="">Select Customer</option>' + (appState.customers || []).map(c => {
+                return `<option value="${c.name}">${c.name}</option>`;
+            }).join('');
+        }
+
+        function addCustomer() {
+            const name = document.getElementById('customerName').value.trim();
+            const mobile = document.getElementById('customerMobile').value.trim();
+            const address = document.getElementById('customerAddress').value.trim();
+
+            if (!name || !mobile || mobile.length !== 10) {
+                showAlert('Fill all fields correctly', 'warning');
+                return;
+            }
+
+            if ((appState.customers || []).find(c => c.mobile === mobile)) {
+                showAlert('Customer already exists', 'warning');
                 return;
             }
 
             appState.customers.push({
                 name,
                 mobile,
-                shopName,
-                emptyCans: 0,
-                cansReturned: 0,
-                totalOrders: 0,
-                purchases: { '300ml': 0, '500ml': 0, '1l': 0, '20l': 0 },
-                createdDate: new Date().toISOString()
+                address,
+                createdDate: new Date().toISOString(),
+                totalSpent: 0,
+                orderCount: 0
             });
 
             saveData();
-            refreshUI();
-            e.target.reset();
-            showMessage('Customer added', 'success');
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerMobile').value = '';
+            document.getElementById('customerAddress').value = '';
+            showAlert('✓ Customer added', 'success');
         }
 
-        function handleReturn(e) {
-            e.preventDefault();
+        // ============================================================================
+        // ORDERS
+        // ============================================================================
 
-            const mobile = document.getElementById('delivery-customer').value;
-            const quantity = parseInt(document.getElementById('return-quantity').value) || 0;
-
-            if (!mobile || quantity <= 0) {
-                showMessage('Select customer and enter quantity', 'error');
-                return;
-            }
-
-            const customer = appState.customers.find(c => c.mobile === mobile);
-            if (!customer || customer.emptyCans < quantity) {
-                showMessage('Invalid return', 'error');
-                return;
-            }
-
-            customer.emptyCans -= quantity;
-            customer.cansReturned += quantity;
-            appState.inventory['20l_empty'] += quantity;
-
-            saveData();
-            refreshUI();
-            restoreUIState();
-            document.getElementById('return-quantity').value = 0;
-            showMessage(`${quantity} cans returned`, 'success');
+        function refreshOrders() {
+            const list = document.getElementById('ordersList');
+            list.innerHTML = (appState.orders || []).reverse().slice(0, 10).map(o => {
+                return `<div class="list-item"><div><div class="list-item-title">${o.customer}</div><div class="list-item-subtitle">₹${parseFloat(o.total).toLocaleString('en-IN', {maximumFractionDigits: 0})} - ${o.status}</div></div><span class="badge badge-success">${o.items?.length || 0} items</span></div>`;
+            }).join('');
         }
 
-        function handleSale(e) {
-            e.preventDefault();
+        function createOrder() {
+            const customer = document.getElementById('orderCustomer').value;
+            const type = document.getElementById('orderType').value;
+            const product = document.getElementById('orderProduct').value;
+            const qty = parseInt(document.getElementById('orderQty').value) || 0;
+            const price = parseFloat(document.getElementById('orderPrice').value) || 0;
+            const driver = document.getElementById('orderDriver').value.trim();
+            const payment = document.getElementById('orderPayment').value;
 
-            const mobile = document.getElementById('delivery-customer').value;
-            const q300 = parseInt(document.getElementById('sale-300ml').value) || 0;
-            const q500 = parseInt(document.getElementById('sale-500ml').value) || 0;
-            const q1l = parseInt(document.getElementById('sale-1l').value) || 0;
-            const q20l = parseInt(document.getElementById('sale-20l').value) || 0;
-
-            const p300 = parseFloat(document.getElementById('price-300ml').value) || 0;
-            const p500 = parseFloat(document.getElementById('price-500ml').value) || 0;
-            const p1l = parseFloat(document.getElementById('price-1l').value) || 0;
-            const p20l = parseFloat(document.getElementById('price-20l').value) || 0;
-
-            if (!mobile || (q300 === 0 && q500 === 0 && q1l === 0 && q20l === 0)) {
-                showMessage('Select customer and products', 'error');
+            if (!customer || !product || qty <= 0 || price <= 0) {
+                showAlert('Fill all fields correctly', 'warning');
                 return;
             }
 
-            if (q300 > appState.inventory['300ml'] || q500 > appState.inventory['500ml'] ||
-                q1l > appState.inventory['1l'] || q20l > appState.inventory['20l_filled']) {
-                showMessage('Insufficient stock', 'error');
+            if (type === 'Warehouse' && (appState.inventory[product] || 0) < qty) {
+                showAlert('Insufficient stock', 'warning');
                 return;
             }
 
-            const customer = appState.customers.find(c => c.mobile === mobile);
-            if (!customer) {
-                showMessage('Customer not found', 'error');
-                return;
-            }
+            const orderId = 'ORD-' + Date.now();
+            const total = qty * price;
 
-            let total = 0;
-            let items = [];
-
-            if (q300 > 0) {
-                total += q300 * p300;
-                items.push(`${q300}x 300ml @ ₹${p300}`);
-                appState.inventory['300ml'] -= q300;
-                customer.purchases['300ml'] += q300;
-            }
-            if (q500 > 0) {
-                total += q500 * p500;
-                items.push(`${q500}x 500ml @ ₹${p500}`);
-                appState.inventory['500ml'] -= q500;
-                customer.purchases['500ml'] += q500;
-            }
-            if (q1l > 0) {
-                total += q1l * p1l;
-                items.push(`${q1l}x 1L @ ₹${p1l}`);
-                appState.inventory['1l'] -= q1l;
-                customer.purchases['1l'] += q1l;
-            }
-            if (q20l > 0) {
-                total += q20l * p20l;
-                items.push(`${q20l}x 20L @ ₹${p20l}`);
-                appState.inventory['20l_filled'] -= q20l;
-                customer.purchases['20l'] += q20l;
-                customer.emptyCans += q20l;
-            }
-
-            customer.totalOrders++;
-
+            // Create order
             appState.orders.push({
+                orderId,
                 date: new Date().toISOString(),
-                customer: customer.name,
-                type: 'sale',
-                items: items.join(', '),
-                amount: total
+                customer,
+                type,
+                items: [{ product, quantity: qty, sellingPrice: price }],
+                total,
+                status: 'Delivered',
+                driver,
+                paymentMethod: payment,
+                paymentStatus: 'Paid'
+            });
+
+            // Update inventory
+            if (type === 'Warehouse') {
+                appState.inventory[product] -= qty;
+            }
+
+            // Update customer
+            const cust = appState.customers.find(c => c.name === customer);
+            if (cust) {
+                cust.totalSpent += total;
+                cust.orderCount += 1;
+            }
+
+            // Generate invoice
+            const invoiceId = 'INV-' + String(appState.invoices.length + 1).padStart(6, '0');
+            appState.invoices.push({
+                invoiceId,
+                orderId,
+                customer,
+                date: new Date().toISOString(),
+                amount: total,
+                paymentMethod: payment,
+                paymentStatus: 'Paid'
             });
 
             saveData();
-            refreshUI();
-            restoreUIState();
             
-            document.getElementById('sale-300ml').value = 0;
-            document.getElementById('sale-500ml').value = 0;
-            document.getElementById('sale-1l').value = 0;
-            document.getElementById('sale-20l').value = 0;
-            calculateTotal();
-            saveUIState();
+            // Reset form
+            document.getElementById('orderCustomer').value = '';
+            document.getElementById('orderProduct').value = '';
+            document.getElementById('orderQty').value = 1;
+            document.getElementById('orderPrice').value = 0;
+            document.getElementById('orderDriver').value = '';
 
-            showMessage(`Sale completed! Total: ₹${total.toFixed(2)}`, 'success');
+            showAlert(`✓ Order created: ${invoiceId}`, 'success');
+        }
+
+        // ============================================================================
+        // INVOICES
+        // ============================================================================
+
+        function refreshInvoices() {
+            const list = document.getElementById('invoicesList');
+            list.innerHTML = (appState.invoices || []).reverse().slice(0, 10).map(inv => {
+                return `<div class="list-item"><div><div class="list-item-title">${inv.invoiceId}</div><div class="list-item-subtitle">${inv.customer} - ₹${parseFloat(inv.amount).toLocaleString('en-IN', {maximumFractionDigits: 0})}</div></div><span class="badge badge-success">${inv.paymentStatus}</span></div>`;
+            }).join('');
         }
     </script>
 </body>
