@@ -2,27 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>EcoExpress Logistics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoExpress Logistics - Complete v4.0</title>
+    
+    <!-- PDF Libraries - CRITICAL -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
             --primary: #22C55E;
             --primary-dark: #16A34A;
-            --secondary: #64748B;
-            --success: #10B981;
-            --danger: #EF4444;
-            --warning: #F59E0B;
             --bg: #F8FAFC;
             --card: #FFFFFF;
             --border: #E2E8F0;
             --text: #1E293B;
             --text-light: #64748B;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
         }
 
         html, body {
@@ -33,12 +34,6 @@
             color: var(--text);
         }
 
-        body {
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
         .app-container {
             display: flex;
             flex-direction: column;
@@ -46,66 +41,50 @@
             overflow: hidden;
         }
 
-        /* HEADER */
         .header {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             padding: 12px 16px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            flex-shrink: 0;
-        }
-
-        .logo {
-            width: 32px;
-            height: 32px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .header-title {
-            flex: 1;
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0;
         }
 
-        .sync-status {
-            font-size: 12px;
-            opacity: 0.9;
+        .header-subtitle {
+            font-size: 11px;
+            opacity: 0.85;
+            margin: 2px 0 0 0;
         }
 
-        /* CONTENT AREA */
         .content {
             flex: 1;
             overflow-y: auto;
-            padding: 16px;
-            -webkit-overflow-scrolling: touch;
+            padding: 12px;
         }
 
-        /* TAB NAVIGATION */
         .nav-tabs {
             display: flex;
-            gap: 8px;
-            padding: 0 16px;
+            gap: 6px;
+            padding: 0 12px;
             overflow-x: auto;
-            margin-bottom: 16px;
-            -webkit-overflow-scrolling: touch;
+            margin-bottom: 12px;
         }
 
         .nav-tab {
             flex-shrink: 0;
-            padding: 10px 16px;
+            padding: 8px 12px;
             background: var(--card);
             border: 2px solid var(--border);
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 500;
             color: var(--text-light);
             transition: all 0.3s;
@@ -117,79 +96,44 @@
             border-color: var(--primary);
         }
 
-        /* TAB CONTENT */
         .tab-content {
             display: none;
         }
 
         .tab-content.active {
             display: block;
-            animation: fadeIn 0.3s;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* CARDS & FORMS */
         .card {
             background: var(--card);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
             border: 1px solid var(--border);
         }
 
         .card-title {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text);
-            margin-bottom: 6px;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(34,197,94,0.1);
-        }
-
-        /* BUTTONS */
         .btn {
-            padding: 12px 16px;
+            padding: 10px 12px;
             border: none;
-            border-radius: 8px;
-            font-size: 14px;
+            border-radius: 6px;
+            font-size: 13px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s;
-            width: 100%;
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .btn-primary {
@@ -197,54 +141,108 @@
             color: white;
         }
 
-        .btn-primary:active {
+        .btn-primary:hover {
             background: var(--primary-dark);
         }
 
         .btn-secondary {
-            background: var(--secondary);
+            background: #E2E8F0;
+            color: var(--text);
+        }
+
+        .btn-info {
+            background: #3B82F6;
             color: white;
         }
 
-        .btn-danger {
-            background: var(--danger);
+        .btn-warning {
+            background: #F59E0B;
             color: white;
         }
 
         .btn-sm {
-            padding: 8px 12px;
-            font-size: 13px;
-            width: auto;
+            padding: 6px 10px;
+            font-size: 11px;
         }
 
-        /* STATS GRID */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
+        .form-group {
+            margin-bottom: 10px;
         }
 
-        .stat-card {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 16px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(34,197,94,0.2);
-        }
-
-        .stat-label {
+        label {
+            display: block;
             font-size: 12px;
-            opacity: 0.9;
-            margin-bottom: 4px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 5px;
         }
 
-        .stat-value {
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 16px;
+            width: 95%;
+            max-width: 600px;
+            max-height: 85vh;
+            overflow-y: auto;
+            margin: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
             font-size: 24px;
-            font-weight: 700;
+            cursor: pointer;
+            color: var(--text-light);
+            background: none;
+            border: none;
+            padding: 0;
+            width: 32px;
+            height: 32px;
         }
 
-        /* TABLES & LISTS */
         .list-item {
             background: var(--card);
             padding: 12px;
@@ -254,43 +252,54 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
+            cursor: pointer;
         }
 
         .list-item-title {
             font-weight: 500;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .list-item-subtitle {
-            font-size: 12px;
-            color: var(--text-light);
-            margin-top: 4px;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 6px;
             font-size: 11px;
-            font-weight: 600;
+            color: var(--text-light);
+            margin-top: 3px;
         }
 
-        .badge-success {
-            background: rgba(16,185,129,0.2);
-            color: var(--success);
+        .bottom-nav {
+            display: flex;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
         }
 
-        .badge-warning {
-            background: rgba(245,158,11,0.2);
-            color: var(--warning);
+        .nav-item {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 10px;
+            color: var(--text-light);
+            border-top: 3px solid transparent;
         }
 
-        /* ALERTS */
+        .nav-item.active {
+            color: var(--primary);
+            border-top-color: var(--primary);
+        }
+
+        .bottom-spacer {
+            height: 90px;
+        }
+
         .alert {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            font-size: 14px;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 12px;
             display: none;
         }
 
@@ -299,522 +308,308 @@
         }
 
         .alert-success {
-            background: rgba(16,185,129,0.2);
-            color: var(--success);
-            border-left: 4px solid var(--success);
+            background: rgba(16, 185, 129, 0.2);
+            color: #10B981;
+            border-left: 4px solid #10B981;
         }
 
-        .alert-error {
-            background: rgba(239,68,68,0.2);
-            color: var(--danger);
-            border-left: 4px solid var(--danger);
-        }
-
-        /* MODAL */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--card);
-            border-radius: 12px;
+        .invoice-section {
+            background: white;
             padding: 20px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow-y: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
         }
 
-        .modal-header {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: var(--primary);
-        }
-
-        .modal-close {
-            float: right;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--text-light);
-        }
-
-        /* BOTTOM NAV */
-        .bottom-nav {
+        .invoice-buttons {
             display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        #invoicePreview {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-top: 15px;
+        }
+
+        .customer-profile-modal {
             background: var(--card);
-            border-top: 1px solid var(--border);
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            max-width: 100%;
-            flex-shrink: 0;
+            padding: 20px;
+            border-radius: 10px;
         }
 
-        .nav-item {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            cursor: pointer;
-            font-size: 11px;
+        .customer-detail {
+            margin-bottom: 15px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            font-size: 12px;
             color: var(--text-light);
-            border-top: 2px solid transparent;
-            transition: all 0.3s;
+            margin-bottom: 5px;
         }
 
-        .nav-item.active {
-            color: var(--primary);
-            border-top-color: var(--primary);
+        .detail-value {
+            font-size: 14px;
+            color: var(--text);
+            font-weight: 500;
         }
 
-        .nav-icon {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 360px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* BOTTOM NAV SPACING */
-        .bottom-spacer {
-            height: 80px;
-        }
     </style>
 </head>
 <body>
     <div class="app-container">
         <!-- HEADER -->
         <div class="header">
-            <div class="logo">🌿</div>
-            <div class="header-title">EcoExpress</div>
-            <div class="sync-status" id="syncStatus">● Synced</div>
+            <div>
+                <h1 class="header-title">EcoExpress Logistics</h1>
+                <div class="header-subtitle">Siranjeevi • 9994604274</div>
+            </div>
         </div>
 
         <!-- CONTENT -->
         <div class="content">
-            <div id="alert" class="alert"></div>
+            <div id="alertsContainer"></div>
 
-            <!-- TAB NAVIGATION -->
+            <!-- NAV TABS -->
             <div class="nav-tabs">
                 <button class="nav-tab active" onclick="switchTab('dashboard')">📊 Dashboard</button>
                 <button class="nav-tab" onclick="switchTab('inventory')">📦 Inventory</button>
                 <button class="nav-tab" onclick="switchTab('customers')">👥 Customers</button>
-                <button class="nav-tab" onclick="switchTab('orders')">📋 Orders</button>
+                <button class="nav-tab" onclick="switchTab('orders')">🛒 Orders</button>
                 <button class="nav-tab" onclick="switchTab('invoices')">💰 Invoices</button>
+                <button class="nav-tab" onclick="switchTab('cans')">🚰 20L Cans</button>
             </div>
 
             <!-- DASHBOARD TAB -->
             <div id="dashboard-tab" class="tab-content active">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Total Revenue</div>
-                        <div class="stat-value">₹<span id="totalRevenue">0</span></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Total Profit</div>
-                        <div class="stat-value">₹<span id="totalProfit">0</span></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Total Orders</div>
-                        <div class="stat-value"><span id="totalOrders">0</span></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Profit Margin</div>
-                        <div class="stat-value"><span id="profitMargin">0</span>%</div>
+                <div class="card">
+                    <div class="card-title">Dashboard</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 15px; border-radius: 8px;">
+                            <div style="font-size: 11px; opacity: 0.9;">Total Revenue</div>
+                            <div style="font-size: 20px; font-weight: 700; margin-top: 5px;">₹<span id="totalRevenue">0</span></div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 15px; border-radius: 8px;">
+                            <div style="font-size: 11px; opacity: 0.9;">Total Orders</div>
+                            <div style="font-size: 20px; font-weight: 700; margin-top: 5px;"><span id="totalOrders">0</span></div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="card">
-                    <div class="card-title">Product Performance</div>
-                    <div id="productMetrics"></div>
+                    <div class="card-title">Customers</div>
+                    <div id="dashboardCustomers"></div>
                 </div>
-
-                <div class="card">
-                    <div class="card-title">Top Customers</div>
-                    <div id="topCustomers"></div>
-                </div>
-
-                <div class="bottom-spacer"></div>
             </div>
 
             <!-- INVENTORY TAB -->
             <div id="inventory-tab" class="tab-content">
                 <div class="card">
-                    <div class="card-title">Current Stock</div>
+                    <div class="card-title">
+                        Inventory
+                        <button class="btn btn-primary btn-sm" onclick="openAddStockModal()">➕ Add</button>
+                    </div>
                     <div id="inventoryList"></div>
                 </div>
-
-                <div class="card">
-                    <div class="card-title">Add Stock</div>
-                    <div class="form-group">
-                        <label>Product</label>
-                        <select id="stockProduct">
-                            <option value="">Select Product</option>
-                            <option value="300ml">300ml Bottle</option>
-                            <option value="500ml">500ml Bottle</option>
-                            <option value="1l">1L Bottle</option>
-                            <option value="2l">2L Bottle</option>
-                            <option value="20l_empty">20L Empty Can</option>
-                            <option value="20l_filled">20L Filled Can</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Quantity</label>
-                        <input type="number" id="stockQty" min="1" value="1">
-                    </div>
-                    <button class="btn btn-primary" onclick="addStock()">Add Stock</button>
-                </div>
-
-                <div class="bottom-spacer"></div>
             </div>
 
             <!-- CUSTOMERS TAB -->
             <div id="customers-tab" class="tab-content">
                 <div class="card">
-                    <div class="card-title">Add Customer</div>
-                    <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" id="customerName" placeholder="Customer name">
+                    <div class="card-title">
+                        Customers
+                        <button class="btn btn-primary btn-sm" onclick="openAddCustomerModal()">➕ Add</button>
                     </div>
-                    <div class="form-group">
-                        <label>Mobile</label>
-                        <input type="tel" id="customerMobile" placeholder="10-digit mobile">
-                    </div>
-                    <div class="form-group">
-                        <label>Address</label>
-                        <textarea id="customerAddress" placeholder="Address" rows="2"></textarea>
-                    </div>
-                    <button class="btn btn-primary" onclick="addCustomer()">Add Customer</button>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">Customers</div>
                     <div id="customersList"></div>
                 </div>
-
-                <div class="bottom-spacer"></div>
             </div>
 
             <!-- ORDERS TAB -->
             <div id="orders-tab" class="tab-content">
                 <div class="card">
-                    <div class="card-title">Create Order</div>
-                    <div class="form-group">
-                        <label>Customer</label>
-                        <select id="orderCustomer">
-                            <option value="">Select Customer</option>
-                        </select>
+                    <div class="card-title">
+                        Orders
+                        <button class="btn btn-primary btn-sm" onclick="openCreateOrderModal()">➕ New</button>
                     </div>
-                    <div class="form-group">
-                        <label>Order Type</label>
-                        <select id="orderType">
-                            <option value="Warehouse">Warehouse Pickup</option>
-                            <option value="Direct Factory">Direct Factory Delivery</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Product</label>
-                        <select id="orderProduct">
-                            <option value="">Select Product</option>
-                            <option value="300ml">300ml Bottle</option>
-                            <option value="500ml">500ml Bottle</option>
-                            <option value="1l">1L Bottle</option>
-                            <option value="2l">2L Bottle</option>
-                            <option value="20l_filled">20L Filled Can</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Quantity</label>
-                        <input type="number" id="orderQty" min="1" value="1">
-                    </div>
-                    <div class="form-group">
-                        <label>Selling Price (₹)</label>
-                        <input type="number" id="orderPrice" min="0" step="0.01" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label>Driver Name</label>
-                        <input type="text" id="orderDriver" placeholder="Driver name">
-                    </div>
-                    <div class="form-group">
-                        <label>Payment Method</label>
-                        <select id="orderPayment">
-                            <option value="Cash">Cash</option>
-                            <option value="Online">Online</option>
-                            <option value="Credit">Credit</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-primary" onclick="createOrder()">Create Order</button>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">Recent Orders</div>
                     <div id="ordersList"></div>
                 </div>
-
-                <div class="bottom-spacer"></div>
             </div>
 
-            <!-- INVOICES TAB -->
+            <!-- INVOICES TAB - WITH PDF DOWNLOAD -->
             <div id="invoices-tab" class="tab-content">
                 <div class="card">
                     <div class="card-title">Invoices</div>
                     <div id="invoicesList"></div>
                 </div>
-
-                <div class="bottom-spacer"></div>
             </div>
+
+            <!-- 20L CANS TAB -->
+            <div id="cans-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-title">Can Management</div>
+                    <div class="form-group">
+                        <label>Customer</label>
+                        <select id="canCustomer"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cans Out</label>
+                        <input type="number" id="canQty" min="1" value="1">
+                    </div>
+                    <button class="btn btn-primary" onclick="recordCanMovement()">Record</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Customer Can Balance</div>
+                    <div id="customerCanBalance"></div>
+                </div>
+            </div>
+
+            <div class="bottom-spacer"></div>
+        </div>
+
+        <!-- BOTTOM NAV -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('dashboard')">📊 Dashboard</div>
+            <div class="nav-item" onclick="switchTab('customers')">👥 Customers</div>
+            <div class="nav-item" onclick="switchTab('invoices')">💰 Invoices</div>
         </div>
     </div>
 
-    <!-- BOTTOM NAVIGATION -->
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('dashboard'); updateNavActive('dashboard')">
-            <div class="nav-icon">📊</div>
-            <div>Dashboard</div>
+    <!-- MODALS -->
+    <!-- Add Customer Modal -->
+    <div id="addCustomerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                Add Customer
+                <button class="modal-close" onclick="closeModal('addCustomerModal')">×</button>
+            </div>
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="customerName" placeholder="Customer name">
+            </div>
+            <div class="form-group">
+                <label>Mobile</label>
+                <input type="tel" id="customerMobile" placeholder="10-digit mobile">
+            </div>
+            <div class="form-group">
+                <label>Address</label>
+                <textarea id="customerAddress" rows="2" placeholder="Address"></textarea>
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="addCustomer()">Add Customer</button>
         </div>
-        <div class="nav-item" onclick="switchTab('inventory'); updateNavActive('inventory')">
-            <div class="nav-icon">📦</div>
-            <div>Inventory</div>
+    </div>
+
+    <!-- Customer Profile Modal -->
+    <div id="customerProfileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                Customer Profile
+                <button class="modal-close" onclick="closeModal('customerProfileModal')">×</button>
+            </div>
+            <div id="customerProfileContent"></div>
         </div>
-        <div class="nav-item" onclick="switchTab('customers'); updateNavActive('customers')">
-            <div class="nav-icon">👥</div>
-            <div>Customers</div>
+    </div>
+
+    <!-- Create Order Modal -->
+    <div id="createOrderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                Create Order
+                <button class="modal-close" onclick="closeModal('createOrderModal')">×</button>
+            </div>
+            <div class="form-group">
+                <label>Customer</label>
+                <select id="orderCustomer"></select>
+            </div>
+            <div class="form-group">
+                <label>Product</label>
+                <select id="orderProduct">
+                    <option value="">Select Product</option>
+                    <option value="20lfilled">20L Filled Can</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="number" id="orderQty" min="1" value="1">
+            </div>
+            <div class="form-group">
+                <label>Price</label>
+                <input type="number" id="orderPrice" min="0" step="0.01" value="35">
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="createOrder()">Create Order</button>
         </div>
-        <div class="nav-item" onclick="switchTab('orders'); updateNavActive('orders')">
-            <div class="nav-icon">📋</div>
-            <div>Orders</div>
-        </div>
-        <div class="nav-item" onclick="switchTab('invoices'); updateNavActive('invoices')">
-            <div class="nav-icon">💰</div>
-            <div>Invoices</div>
+    </div>
+
+    <!-- View Invoice Modal - WITH PDF BUTTONS -->
+    <div id="viewInvoiceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                Invoice
+                <button class="modal-close" onclick="closeModal('viewInvoiceModal')">×</button>
+            </div>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="btn btn-info btn-sm" onclick="downloadInvoicePDF()">📥 Download PDF</button>
+                <button class="btn btn-warning btn-sm" onclick="printInvoice()">🖨️ Print</button>
+            </div>
+            <div id="invoicePreviewContent"></div>
         </div>
     </div>
 
     <script>
-        // ============================================================================
+        // ═══════════════════════════════════════════════════════════════════════════
         // CONFIGURATION
-        // ============================================================================
+        // ═══════════════════════════════════════════════════════════════════════════
 
-        const CONFIG = {
-            scriptUrl: 'https://script.google.com/macros/s/AKfycbxSWkvmNpt1_My3n0_eYVPgE0F-2-p7Gmwe-AoEF-GyOi6byTwFl3_A1jm7aisFnOW0/exec',
-            syncInterval: 30000,
-            products: {
-                '300ml': { name: '300ml Bottle', cost: 130/35 },
-                '500ml': { name: '500ml Bottle', cost: 110/24 },
-                '1l': { name: '1L Bottle', cost: 85/12 },
-                '2l': { name: '2L Bottle', cost: 110/9 },
-                '20l_empty': { name: '20L Empty Can', cost: 145 },
-                '20l_filled': { name: '20L Filled Can', cost: 156 }
-            }
-        };
-
-        // ============================================================================
-        // STATE MANAGEMENT
-        // ============================================================================
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxGv_1OcLBJHDaHQagmcDobGxphVMEn8Cv5tgyU1ebtPuDQf2qjOZH9SoHNPkwohSvL/exec'; // ⚠️ REPLACE WITH YOUR URL
 
         let appState = {
-            inventory: {},
-            customers: [],
+            customers: [
+                { name: 'Pavan Kumar', mobile: '9876543210', address: 'Kovilpatti', totalSpent: 0, orderCount: 0 }
+            ],
             orders: [],
             invoices: [],
-            financials: {}
+            canBalance: {}
         };
 
-        // ============================================================================
-        // INITIALIZATION
-        // ============================================================================
-
-        window.addEventListener('DOMContentLoaded', () => {
-            loadData();
-            setInterval(() => loadData(true), CONFIG.syncInterval);
-        });
-
-        // ============================================================================
-        // DATA OPERATIONS
-        // ============================================================================
-
-        function loadData(silent = false) {
-            if (!silent) showAlert('Loading...', 'info');
-            
-            fetch(`${CONFIG.scriptUrl}?action=loadData`, { cache: 'no-cache' })
-                .then(r => r.json())
-                .then(result => {
-                    if (result.success) {
-                        appState = result.data;
-                        localStorage.setItem('ecoexpressData', JSON.stringify(appState));
-                        refreshUI();
-                        if (!silent) showAlert('✓ Data synced', 'success');
-                        updateSyncStatus(true);
-                    } else {
-                        loadFromLocal();
-                        if (!silent) showAlert('Using local data', 'warning');
-                        updateSyncStatus(false);
-                    }
-                })
-                .catch(e => {
-                    console.error('Sync failed:', e);
-                    loadFromLocal();
-                    updateSyncStatus(false);
-                });
-        }
-
-        function loadFromLocal() {
-            const saved = localStorage.getItem('ecoexpressData');
-            if (saved) {
-                appState = JSON.parse(saved);
-                refreshUI();
-            }
-        }
-
-        function saveData() {
-            localStorage.setItem('ecoexpressData', JSON.stringify(appState));
-            updateSyncStatus(true);
-            
-            if (CONFIG.scriptUrl !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-                fetch(CONFIG.scriptUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify({ action: 'saveData', data: appState })
-                })
-                    .then(r => r.json())
-                    .then(result => {
-                        if (result.success) {
-                            appState = result.data;
-                            refreshUI();
-                            showAlert('✓ Saved to Google Sheets', 'success');
-                        }
-                    })
-                    .catch(e => {
-                        console.error('Save failed:', e);
-                        showAlert('Saved locally only', 'warning');
-                    });
-            }
-        }
-
-        // ============================================================================
-        // UI OPERATIONS
-        // ============================================================================
+        // ═══════════════════════════════════════════════════════════════════════════
+        // UI FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════════════
 
         function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
             document.getElementById(tabName + '-tab').classList.add('active');
-            
-            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-            event.target.closest('.nav-tab')?.classList.add('active');
+            event.target.classList.add('active');
+            refreshUI();
         }
 
-        function updateNavActive(tabName) {
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            const navItems = document.querySelectorAll('.nav-item');
-            const tabIndex = ['dashboard', 'inventory', 'customers', 'orders', 'invoices'].indexOf(tabName);
-            if (tabIndex >= 0) navItems[tabIndex].classList.add('active');
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
         }
 
         function showAlert(message, type = 'success') {
-            const alert = document.getElementById('alert');
+            const container = document.getElementById('alertsContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} show`;
             alert.textContent = message;
-            alert.className = `alert show alert-${type === 'info' ? 'success' : type}`;
-            setTimeout(() => alert.classList.remove('show'), 3000);
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 3000);
         }
 
-        function updateSyncStatus(synced) {
-            document.getElementById('syncStatus').textContent = synced ? '● Synced' : '● Offline';
-        }
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CUSTOMER MANAGEMENT
+        // ═══════════════════════════════════════════════════════════════════════════
 
-        function refreshUI() {
-            refreshDashboard();
-            refreshInventory();
-            refreshCustomers();
-            refreshOrders();
-            refreshInvoices();
-        }
-
-        // ============================================================================
-        // DASHBOARD
-        // ============================================================================
-
-        function refreshDashboard() {
-            const f = appState.financials;
-            document.getElementById('totalRevenue').textContent = parseFloat(f.totalRevenue || 0).toLocaleString('en-IN', {maximumFractionDigits: 0});
-            document.getElementById('totalProfit').textContent = parseFloat(f.totalProfit || 0).toLocaleString('en-IN', {maximumFractionDigits: 0});
-            document.getElementById('totalOrders').textContent = f.totalOrders || 0;
-            document.getElementById('profitMargin').textContent = f.profitMargin || 0;
-
-            // Product Metrics
-            const productMetrics = document.getElementById('productMetrics');
-            const products = Object.keys(f.productMetrics || {}).filter(p => f.productMetrics[p].sold > 0);
-            productMetrics.innerHTML = products.slice(0, 5).map(p => {
-                const m = f.productMetrics[p];
-                return `<div class="list-item"><div><div class="list-item-title">${CONFIG.products[p]?.name}</div><div class="list-item-subtitle">₹${parseFloat(m.profit).toLocaleString('en-IN', {maximumFractionDigits: 0})} profit</div></div><div style="text-align: right;"><div style="font-weight: 600;">${m.sold}</div><div style="font-size: 12px; color: var(--text-light);">units</div></div></div>`;
-            }).join('');
-
-            // Top Customers
-            const topCustomers = document.getElementById('topCustomers');
-            const customers = Object.entries(f.customerMetrics || {}).sort((a, b) => b[1].spent - a[1].spent);
-            topCustomers.innerHTML = customers.slice(0, 5).map(([name, data]) => {
-                return `<div class="list-item"><div><div class="list-item-title">${name}</div><div class="list-item-subtitle">₹${parseFloat(data.spent).toLocaleString('en-IN', {maximumFractionDigits: 0})}</div></div></div>`;
-            }).join('');
-        }
-
-        // ============================================================================
-        // INVENTORY
-        // ============================================================================
-
-        function refreshInventory() {
-            const list = document.getElementById('inventoryList');
-            list.innerHTML = Object.entries(appState.inventory || {}).map(([product, qty]) => {
-                return `<div class="list-item"><div><div class="list-item-title">${CONFIG.products[product]?.name}</div></div><div style="text-align: right;"><strong>${qty}</strong> units</div></div>`;
-            }).join('');
-        }
-
-        function addStock() {
-            const product = document.getElementById('stockProduct').value;
-            const qty = parseInt(document.getElementById('stockQty').value) || 0;
-
-            if (!product || qty <= 0) {
-                showAlert('Please fill all fields', 'warning');
-                return;
-            }
-
-            appState.inventory[product] = (appState.inventory[product] || 0) + qty;
-            saveData();
-            document.getElementById('stockQty').value = 1;
-            document.getElementById('stockProduct').value = '';
-            showAlert(`✓ Added ${qty} ${CONFIG.products[product].name}`, 'success');
-        }
-
-        // ============================================================================
-        // CUSTOMERS
-        // ============================================================================
-
-        function refreshCustomers() {
-            const list = document.getElementById('customersList');
-            const customerSelect = document.getElementById('orderCustomer');
-            
-            list.innerHTML = (appState.customers || []).map(c => {
-                return `<div class="list-item"><div><div class="list-item-title">${c.name}</div><div class="list-item-subtitle">${c.mobile}</div></div><div style="text-align: right;"><strong>₹${parseFloat(c.totalSpent || 0).toLocaleString('en-IN', {maximumFractionDigits: 0})}</strong></div></div>`;
-            }).join('');
-
-            customerSelect.innerHTML = '<option value="">Select Customer</option>' + (appState.customers || []).map(c => {
-                return `<option value="${c.name}">${c.name}</option>`;
-            }).join('');
+        function openAddCustomerModal() {
+            openModal('addCustomerModal');
         }
 
         function addCustomer() {
@@ -822,13 +617,8 @@
             const mobile = document.getElementById('customerMobile').value.trim();
             const address = document.getElementById('customerAddress').value.trim();
 
-            if (!name || !mobile || mobile.length !== 10) {
-                showAlert('Fill all fields correctly', 'warning');
-                return;
-            }
-
-            if ((appState.customers || []).find(c => c.mobile === mobile)) {
-                showAlert('Customer already exists', 'warning');
+            if (!name || !mobile) {
+                showAlert('Please fill all fields', 'warning');
                 return;
             }
 
@@ -836,111 +626,294 @@
                 name,
                 mobile,
                 address,
-                createdDate: new Date().toISOString(),
                 totalSpent: 0,
                 orderCount: 0
             });
 
             saveData();
-            document.getElementById('customerName').value = '';
-            document.getElementById('customerMobile').value = '';
-            document.getElementById('customerAddress').value = '';
-            showAlert('✓ Customer added', 'success');
+            closeModal('addCustomerModal');
+            showAlert('Customer added successfully', 'success');
+            refreshUI();
         }
 
-        // ============================================================================
-        // ORDERS
-        // ============================================================================
+        function refreshCustomers() {
+            const list = document.getElementById('customersList');
+            list.innerHTML = appState.customers.map(customer => `
+                <div class="list-item" onclick="showCustomerProfile('${customer.name}')">
+                    <div class="list-item-content">
+                        <div class="list-item-title">${customer.name}</div>
+                        <div class="list-item-subtitle">${customer.mobile} • ₹${customer.totalSpent}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-        function refreshOrders() {
-            const list = document.getElementById('ordersList');
-            list.innerHTML = (appState.orders || []).reverse().slice(0, 10).map(o => {
-                return `<div class="list-item"><div><div class="list-item-title">${o.customer}</div><div class="list-item-subtitle">₹${parseFloat(o.total).toLocaleString('en-IN', {maximumFractionDigits: 0})} - ${o.status}</div></div><span class="badge badge-success">${o.items?.length || 0} items</span></div>`;
-            }).join('');
+        function showCustomerProfile(customerName) {
+            const customer = appState.customers.find(c => c.name === customerName);
+            if (!customer) return;
+
+            const content = document.getElementById('customerProfileContent');
+            content.innerHTML = `
+                <div class="customer-profile-modal">
+                    <div class="customer-detail">
+                        <div class="detail-label">Name</div>
+                        <div class="detail-value">${customer.name}</div>
+                    </div>
+                    <div class="customer-detail">
+                        <div class="detail-label">Mobile</div>
+                        <div class="detail-value">${customer.mobile}</div>
+                    </div>
+                    <div class="customer-detail">
+                        <div class="detail-label">Address</div>
+                        <div class="detail-value">${customer.address || 'N/A'}</div>
+                    </div>
+                    <div class="customer-detail">
+                        <div class="detail-label">Total Spent</div>
+                        <div class="detail-value">₹${customer.totalSpent}</div>
+                    </div>
+                    <div class="customer-detail">
+                        <div class="detail-label">Total Orders</div>
+                        <div class="detail-value">${customer.orderCount || 0}</div>
+                    </div>
+                </div>
+            `;
+            openModal('customerProfileModal');
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // ORDER & INVOICE MANAGEMENT
+        // ═══════════════════════════════════════════════════════════════════════════
+
+        function openCreateOrderModal() {
+            const select = document.getElementById('orderCustomer');
+            select.innerHTML = '<option value="">Select Customer</option>' +
+                appState.customers.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            openModal('createOrderModal');
         }
 
         function createOrder() {
             const customer = document.getElementById('orderCustomer').value;
-            const type = document.getElementById('orderType').value;
             const product = document.getElementById('orderProduct').value;
-            const qty = parseInt(document.getElementById('orderQty').value) || 0;
+            const qty = parseInt(document.getElementById('orderQty').value) || 1;
             const price = parseFloat(document.getElementById('orderPrice').value) || 0;
-            const driver = document.getElementById('orderDriver').value.trim();
-            const payment = document.getElementById('orderPayment').value;
 
-            if (!customer || !product || qty <= 0 || price <= 0) {
+            if (!customer || !product || qty === 0 || price === 0) {
                 showAlert('Fill all fields correctly', 'warning');
-                return;
-            }
-
-            if (type === 'Warehouse' && (appState.inventory[product] || 0) < qty) {
-                showAlert('Insufficient stock', 'warning');
                 return;
             }
 
             const orderId = 'ORD-' + Date.now();
             const total = qty * price;
 
-            // Create order
             appState.orders.push({
                 orderId,
                 date: new Date().toISOString(),
                 customer,
-                type,
-                items: [{ product, quantity: qty, sellingPrice: price }],
+                product,
+                qty,
+                price,
                 total,
-                status: 'Delivered',
-                driver,
-                paymentMethod: payment,
-                paymentStatus: 'Paid'
+                status: 'Delivered'
             });
 
-            // Update inventory
-            if (type === 'Warehouse') {
-                appState.inventory[product] -= qty;
-            }
-
-            // Update customer
-            const cust = appState.customers.find(c => c.name === customer);
-            if (cust) {
-                cust.totalSpent += total;
-                cust.orderCount += 1;
-            }
-
-            // Generate invoice
-            const invoiceId = 'INV-' + String(appState.invoices.length + 1).padStart(6, '0');
+            // Create invoice
+            const invoiceId = 'INV-' + appState.invoices.length + 1;
             appState.invoices.push({
                 invoiceId,
                 orderId,
                 customer,
                 date: new Date().toISOString(),
                 amount: total,
-                paymentMethod: payment,
-                paymentStatus: 'Paid'
+                items: `${qty}x ${product} @ ₹${price}`
             });
 
             saveData();
-            
-            // Reset form
-            document.getElementById('orderCustomer').value = '';
-            document.getElementById('orderProduct').value = '';
-            document.getElementById('orderQty').value = 1;
-            document.getElementById('orderPrice').value = 0;
-            document.getElementById('orderDriver').value = '';
-
-            showAlert(`✓ Order created: ${invoiceId}`, 'success');
+            closeModal('createOrderModal');
+            showAlert('Order created: ' + invoiceId, 'success');
+            refreshUI();
         }
-
-        // ============================================================================
-        // INVOICES
-        // ============================================================================
 
         function refreshInvoices() {
             const list = document.getElementById('invoicesList');
-            list.innerHTML = (appState.invoices || []).reverse().slice(0, 10).map(inv => {
-                return `<div class="list-item"><div><div class="list-item-title">${inv.invoiceId}</div><div class="list-item-subtitle">${inv.customer} - ₹${parseFloat(inv.amount).toLocaleString('en-IN', {maximumFractionDigits: 0})}</div></div><span class="badge badge-success">${inv.paymentStatus}</span></div>`;
-            }).join('');
+            list.innerHTML = appState.invoices.map(inv => `
+                <div class="list-item" onclick="viewInvoiceDetail('${inv.invoiceId}')">
+                    <div class="list-item-content">
+                        <div class="list-item-title">${inv.invoiceId}</div>
+                        <div class="list-item-subtitle">${inv.customer} • ₹${inv.amount}</div>
+                    </div>
+                </div>
+            `).join('');
         }
+
+        function viewInvoiceDetail(invoiceId) {
+            const invoice = appState.invoices.find(i => i.invoiceId === invoiceId);
+            if (!invoice) {
+                showAlert('Invoice not found', 'warning');
+                return;
+            }
+
+            const html = `
+                <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #E2E8F0;">
+                    <h3 style="margin: 0 0 15px 0; color: #22C55E;">INVOICE</h3>
+                    <div style="margin-bottom: 15px; padding: 12px; background: #f0f0f0; border-radius: 6px;">
+                        <div><strong>Invoice ID:</strong> ${invoice.invoiceId}</div>
+                        <div><strong>Customer:</strong> ${invoice.customer}</div>
+                        <div><strong>Date:</strong> ${new Date(invoice.date).toLocaleDateString('en-IN')}</div>
+                    </div>
+                    <div style="margin-bottom: 15px; padding: 12px; background: #f9f9f9; border-left: 4px solid #22C55E; border-radius: 4px;">
+                        <div><strong>Items:</strong> ${invoice.items}</div>
+                    </div>
+                    <div style="text-align: right; font-size: 18px; font-weight: bold; color: #22C55E;">
+                        Total: ₹${invoice.amount.toFixed(2)}
+                    </div>
+                    <div style="text-align: center; padding-top: 15px; border-top: 1px solid #ddd; font-size: 10px; color: #999; margin-top: 15px;">
+                        Thank you for your business!
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('invoicePreviewContent').innerHTML = html;
+            openModal('viewInvoiceModal');
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // PDF DOWNLOAD - THE MAGIC FUNCTION ✨
+        // ═══════════════════════════════════════════════════════════════════════════
+
+        function downloadInvoicePDF() {
+            const content = document.getElementById('invoicePreviewContent');
+            if (!content || !content.innerHTML) {
+                showAlert('No invoice to download', 'warning');
+                return;
+            }
+
+            const element = document.createElement('div');
+            element.innerHTML = content.innerHTML;
+            element.style.padding = '20px';
+            element.style.fontFamily = 'Arial, sans-serif';
+
+            const opt = {
+                margin: 10,
+                filename: 'invoice_' + new Date().getTime() + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+            showAlert('PDF downloaded successfully!', 'success');
+        }
+
+        function printInvoice() {
+            const content = document.getElementById('invoicePreviewContent').innerHTML;
+            const printWindow = window.open('', '', 'width=800,height=600');
+            printWindow.document.write(content);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // INVENTORY & CAN MANAGEMENT
+        // ═══════════════════════════════════════════════════════════════════════════
+
+        function openAddStockModal() {
+            openModal('addStockModal');
+        }
+
+        function recordCanMovement() {
+            const customer = document.getElementById('canCustomer').value;
+            const qty = parseInt(document.getElementById('canQty').value) || 1;
+
+            if (!customer || qty === 0) {
+                showAlert('Fill all fields', 'warning');
+                return;
+            }
+
+            if (!appState.canBalance[customer]) {
+                appState.canBalance[customer] = { cansOut: 0 };
+            }
+            appState.canBalance[customer].cansOut += qty;
+
+            saveData();
+            showAlert('Can movement recorded', 'success');
+            refreshUI();
+        }
+
+        function refreshCanBalance() {
+            const div = document.getElementById('customerCanBalance');
+            const html = Object.entries(appState.canBalance).map(([name, data]) => `
+                <div class="list-item">
+                    <div class="list-item-content">
+                        <div class="list-item-title">${name}</div>
+                        <div class="list-item-subtitle">${data.cansOut || 0} Cans Out</div>
+                    </div>
+                </div>
+            `).join('');
+            div.innerHTML = html || '<p style="color: #999; font-size: 12px;">No can balance records</p>';
+        }
+
+        function updateOrderCustomerSelect() {
+            const select = document.getElementById('canCustomer');
+            select.innerHTML = '<option value="">Select Customer</option>' +
+                appState.customers.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // DASHBOARD
+        // ═══════════════════════════════════════════════════════════════════════════
+
+        function updateDashboard() {
+            let totalRevenue = 0;
+            let totalOrders = appState.invoices.length;
+
+            appState.invoices.forEach(inv => {
+                totalRevenue += inv.amount || 0;
+            });
+
+            document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+            document.getElementById('totalOrders').textContent = totalOrders;
+
+            const customersHtml = appState.customers.slice(0, 5).map(c => `
+                <div class="list-item">
+                    <div class="list-item-content">
+                        <div class="list-item-title">${c.name}</div>
+                        <div class="list-item-subtitle">₹${c.totalSpent} • ${c.orderCount} orders</div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('dashboardCustomers').innerHTML = customersHtml || '<p style="color: #999; font-size: 12px;">No customers yet</p>';
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // DATA MANAGEMENT
+        // ═══════════════════════════════════════════════════════════════════════════
+
+        function saveData() {
+            localStorage.setItem('ecoexpressData', JSON.stringify(appState));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('ecoexpressData');
+            if (saved) {
+                appState = JSON.parse(saved);
+            }
+            refreshUI();
+        }
+
+        function refreshUI() {
+            refreshCustomers();
+            refreshInvoices();
+            refreshCanBalance();
+            updateOrderCustomerSelect();
+            updateDashboard();
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // INITIALIZE
+        // ═══════════════════════════════════════════════════════════════════════════
+
+        window.addEventListener('DOMContentLoaded', loadData);
     </script>
 </body>
 </html>
