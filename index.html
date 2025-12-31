@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Management System</title>
+    <style>
+        :root {
+            --color-primary: #32B8C6;
+            --color-primary-dark: #1D7480;
+            --color-error: #FF5459;
+            --color-success: #22C55E;
+            --color-warning: #F59E61;
+            --color-bg: #F5F5F5;
+            --color-surface: #FFFFFF;
+            --color-text: #1F2121;
+            --color-text-light: #626C7C;
+            --color-border: #E0E0E0;
+            --radius: 8px;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --duration: 200ms;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+            padding: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-name {
+            font-size: 14px;
+            color: var(--color-text-light);
+        }
+
+        .sync-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-success);
+            animation: pulse 2s infinite;
+        }
+
+        .sync-indicator.syncing {
+            background: var(--color-warning);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: var(--color-error);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 14px;
+            transition: background var(--duration);
+        }
+
+        .btn-logout:hover {
+            background: #E63946;
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 16px;
+            gap: 16px;
+        }
+
+        /* View Sections */
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--color-border);
+            background: var(--color-surface);
+            padding: 0 16px;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .tab-btn {
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-text-light);
+            border-bottom: 2px solid transparent;
+            transition: all var(--duration);
+            position: relative;
+            bottom: -1px;
+        }
+
+        .tab-btn.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            transition: box-shadow var(--duration);
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        /* Trip Card */
+        .trip-card {
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .trip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .trip-id {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .trip-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-scheduled {
+            background: rgba(100, 150, 200, 0.1);
+            color: #4682B4;
+        }
+
+        .status-started {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--color-warning);
+        }
+
+        .status-pickup-completed {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3B82F6;
+        }
+
+        .status-in-transit {
+            background: rgba(139, 92, 246, 0.1);
+            color: #8B5CF6;
+        }
+
+        .status-completed {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--color-success);
+        }
+
+        .trip-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .trip-location {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .location-icon {
+            color: var(--color-primary);
+            font-weight: bold;
+        }
+
+        .location-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .location-label {
+            font-size: 12px;
+            color: var(--color-text-light);
+        }
+
+        .location-address {
+            font-weight: 500;
+        }
+
+        .trip-footer {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--duration);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            justify-content: center;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-dark);
+        }
+
+        .btn-secondary {
+            background: rgba(50, 184, 198, 0.1);
+            color: var(--color-primary);
+            border: 1px solid var(--color-primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(50, 184, 198, 0.2);
+        }
+
+        .btn-success {
+            background: var(--color-success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #16A34A;
+        }
+
+        .btn-danger {
+            background: var(--color-error);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #E63946;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Forms */
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            padding: 12px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color var(--duration);
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(50, 184, 198, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--color-primary), #1D7480);
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .login-card h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--color-primary);
+        }
+
+        .login-card p {
+            font-size: 14px;
+            color: var(--color-text-light);
+            margin-bottom: 24px;
+        }
+
+        .error-msg {
+            background: rgba(255, 84, 89, 0.1);
+            color: var(--color-error);
+            padding: 12px;
+            border-radius: var(--radius);
+            font-size: 14px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--color-text-light);
+        }
+
+        /* Grid Layouts */
+        .grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .grid-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .trip-info {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .user-info {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .main {
+                padding: 12px;
+            }
+
+            .login-card {
+                padding: 24px;
+            }
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 2000;
+            max-width: 400px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--color-success);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--color-error);
+        }
+
+        .notification.info {
+            border-left: 4px solid var(--color-primary);
+        }
+
+        /* Status Timeline */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+        }
+
+        .timeline-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--color-border);
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        .timeline-dot.completed {
+            background: var(--color-success);
+        }
+
+        .timeline-dot.active {
+            background: var(--color-primary);
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-label {
+            font-weight: 500;
+            color: var(--color-text);
+        }
+
+        .timeline-time {
+            color: var(--color-text-light);
+            font-size: 12px;
+        }
+
+        /* Payment Card */
+        .payment-section {
+            background: rgba(50, 184, 198, 0.05);
+            padding: 12px;
+            border-radius: var(--radius);
+            border: 1px solid rgba(50, 184, 198, 0.2);
+            margin-top: 12px;
+        }
+
+        .payment-status {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--color-text);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(50, 184, 198, 0.2);
+            border-top-color: var(--color-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .gap-8 {
+            gap: 8px;
+        }
+
+        .gap-12 {
+            gap: 12px;
+        }
+
+        .mb-12 {
+            margin-bottom: 12px;
+        }
+
+        .mt-12 {
+            margin-top: 12px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-sm {
+            font-size: 12px;
+            color: var(--color-text-light);
+        }
+
+        .font-bold {
+            font-weight: 600;
+        }
+
+        /* File Upload */
+        .file-input-wrapper {
+            position: relative;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border: 2px dashed var(--color-border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all var(--duration);
+            background: rgba(50, 184, 198, 0.02);
+        }
+
+        .file-input-label:hover {
+            border-color: var(--color-primary);
+            background: rgba(50, 184, 198, 0.05);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-preview {
+            margin-top: 12px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            max-height: 300px;
+        }
+
+        .file-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(50, 184, 198, 0.1);
+            color: var(--color-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-card">
+            <h1>Trip Manager</h1>
+            <p>Commercial Vehicle Operations</p>
+            <div class="error-msg" id="loginError"></div>
+            <form class="form" id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Email or Phone</label>
+                    <input type="text" class="form-input" id="loginInput" placeholder="Enter email or phone" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="passwordInput" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <div style="margin-top: 20px; padding: 12px; background: #F0F9FF; border-radius: 8px; font-size: 12px; color: var(--color-text-light);">
+                <strong>Demo Credentials:</strong><br>
+                Admin: raj@company.com / admin123<br>
+                Driver: amit@company.com / driver123
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="appContainer" class="container" style="display: none;">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1>Trip Management System</h1>
+                <div class="user-info">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="sync-indicator" id="syncIndicator"></span>
+                        <span class="user-name" id="userName"></span>
+                    </div>
+                    <button class="btn-logout" onclick="handleLogout()">Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main">
+            <!-- Admin View -->
+            <div id="adminView" class="view">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchAdminTab('trips')">Dashboard</button>
+                    <button class="tab-btn" onclick="switchAdminTab('create')">Create Trip</button>
+                    <button class="tab-btn" onclick="switchAdminTab('reports')">Reports</button>
+                </div>
+
+                <!-- Trips Dashboard -->
+                <div id="adminTripsTab" class="view active">
+                    <div class="card">
+                        <div class="card-title">Trip Status Overview</div>
+                        <div class="grid grid-2" id="tripStats"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">All Trips</div>
+                        <div id="adminTripsList" class="grid"></div>
+                    </div>
+                </div>
+
+                <!-- Create Trip -->
+                <div id="adminCreateTab" class="view">
+                    <div class="card">
+                        <div class="card-title">Create New Trip</div>
+                        <form class="form" id="createTripForm" onsubmit="handleCreateTrip(event)">
+                            <div class="form-group">
+                                <label class="form-label">Customer Name *</label>
+                                <input type="text" class="form-input" id="customerName" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Customer Phone *</label>
+                                <input type="tel" class="form-input" id="customerPhone" placeholder="10-digit number" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Pickup Location *</label>
+                                <input type="text" class="form-input" id="pickupLocation" placeholder="Address or landmark" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Pickup Latitude</label>
+                                <input type="number" class="form-input" id="pickupLat" step="0.0001" placeholder="12.9716">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Pickup Longitude</label>
+                                <input type="number" class="form-input" id="pickupLng" step="0.0001" placeholder="77.5946">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Drop Location *</label>
+                                <input type="text" class="form-input" id="dropLocation" placeholder="Address or landmark" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Drop Latitude</label>
+                                <input type="number" class="form-input" id="dropLat" step="0.0001" placeholder="12.8355">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Drop Longitude</label>
+                                <input type="number" class="form-input" id="dropLng" step="0.0001" placeholder="77.6245">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Scheduled Time *</label>
+                                <input type="datetime-local" class="form-input" id="scheduledTime" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Expected Distance</label>
+                                <input type="text" class="form-input" id="expectedDistance" placeholder="e.g., 15 km">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Expected Duration</label>
+                                <input type="text" class="form-input" id="expectedDuration" placeholder="e.g., 45 mins">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Assign to Driver *</label>
+                                <select class="form-select" id="assignDriver" required>
+                                    <option value="">Select Driver</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Create & Publish Trip</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Reports -->
+                <div id="adminReportsTab" class="view">
+                    <div class="card">
+                        <div class="card-title">Trip Reports</div>
+                        <div class="form-group">
+                            <label class="form-label">Report Type</label>
+                            <select class="form-select" id="reportType" onchange="generateReport()">
+                                <option value="daily">Daily Summary</option>
+                                <option value="weekly">Weekly Summary</option>
+                                <option value="driver">By Driver</option>
+                                <option value="payment">Payment Status</option>
+                            </select>
+                        </div>
+                        <div id="reportOutput" style="margin-top: 16px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Driver View -->
+            <div id="driverView" class="view">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchDriverTab('available')">Available Trips</button>
+                    <button class="tab-btn" onclick="switchDriverTab('active')">Active Trip</button>
+                    <button class="tab-btn" onclick="switchDriverTab('completed')">Completed</button>
+                </div>
+
+                <!-- Available Trips -->
+                <div id="driverAvailableTab" class="view active">
+                    <div id="driverTripsList" class="grid"></div>
+                </div>
+
+                <!-- Active Trip -->
+                <div id="driverActiveTab" class="view">
+                    <div id="activeTrip" class="card">
+                        <p style="color: var(--color-text-light);">No active trip</p>
+                    </div>
+                </div>
+
+                <!-- Completed Trips -->
+                <div id="driverCompletedTab" class="view">
+                    <div id="driverCompletedList" class="grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Record Payment</span>
+                <button class="modal-close" onclick="closePaymentModal()">×</button>
+            </div>
+            <form class="form" id="paymentForm" onsubmit="handlePaymentSubmit(event)">
+                <div class="form-group">
+                    <label class="form-label">Payment Method *</label>
+                    <select class="form-select" id="paymentMethod" onchange="updatePaymentFields()" required>
+                        <option value="">Select Method</option>
+                        <option value="cash">Cash</option>
+                        <option value="upi">UPI Transfer</option>
+                    </select>
+                </div>
+
+                <div id="cashFields" class="hidden">
+                    <div class="form-group">
+                        <label class="form-label">Cash Amount Received (₹) *</label>
+                        <input type="number" class="form-input" id="cashAmount" step="0.01" min="0">
+                    </div>
+                </div>
+
+                <div id="upiFields" class="hidden">
+                    <div class="form-group">
+                        <label class="form-label">Transaction Amount (₹) *</label>
+                        <input type="number" class="form-input" id="upiAmount" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Transaction ID</label>
+                        <input type="text" class="form-input" id="upiTransactionId" placeholder="UTR/Reference Number">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Upload Payment Screenshot *</label>
+                        <div class="file-input-wrapper">
+                            <label class="file-input-label" for="upiProofFile">
+                                <span id="fileLabel">Click to upload screenshot or drag and drop</span>
+                            </label>
+                            <input type="file" class="file-input" id="upiProofFile" accept="image/*" onchange="handleImageUpload(event)">
+                        </div>
+                        <div id="imagePreview" class="file-preview"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Notes (Optional)</label>
+                    <textarea class="form-textarea" id="paymentNotes" placeholder="Any additional notes..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-success">Submit Payment</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Trip Detail Modal -->
+    <div id="tripDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Trip Details</span>
+                <button class="modal-close" onclick="closeTripDetailModal()">×</button>
+            </div>
+            <div id="tripDetailContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // ============== GLOBAL STATE ==============
+        let appState = {
+            currentUser: null,
+            users: [],
+            trips: [],
+            payments: [],
+            syncMetadata: {
+                lastSync: null,
+                syncStatus: 'idle',
+                pendingChanges: []
+            }
+        };
+
+        const STORAGE_KEY = 'tripManager_appState';
+        const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID'; // Replace with actual Google Sheet ID
+        const GOOGLE_APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_DEPLOYMENT_URL'; // Replace with actual Apps Script URL
+
+        // ============== INITIALIZATION ==============
+        window.addEventListener('load', () => {
+            loadLocalData();
+            initializeApp();
+            setupOfflineSync();
+        });
+
+        function loadLocalData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    appState = JSON.parse(saved);
+                } catch (e) {
+                    console.error('Failed to load local data:', e);
+                }
+            } else {
+                initializeDefaultData();
+            }
+        }
+
+        function initializeDefaultData() {
+            appState = {
+                currentUser: null,
+                users: [
+                    { id: 'admin1', name: 'Raj Kumar', email: 'raj@company.com', phone: '9876543210', role: 'admin', passwordHash: hashPassword('admin123') },
+                    { id: 'admin2', name: 'Priya Singh', email: 'priya@company.com', phone: '9876543211', role: 'admin', passwordHash: hashPassword('admin123') },
+                    { id: 'driver1', name: 'Amit Patel', email: 'amit@company.com', phone: '9876543212', role: 'driver', passwordHash: hashPassword('driver123') }
+                ],
+                trips: [
+                    {
+                        id: 'TRIP001',
+                        customerName: 'ABC Enterprises',
+                        customerPhone: '9123456789',
+                        pickupLocation: { lat: 12.9716, lng: 77.5946, address: 'Whitefield, Bengaluru' },
+                        dropLocation: { lat: 12.8355, lng: 77.6245, address: 'Indiranagar, Bengaluru' },
+                        scheduledTime: new Date(Date.now() + 2*3600000).toISOString(),
+                        expectedDistance: '15 km',
+                        expectedDuration: '45 mins',
+                        assignedDriver: 'driver1',
+                        status: 'scheduled',
+                        pickupCompletedAt: null,
+                        tripStartedAt: null,
+                        tripCompletedAt: null,
+                        paymentStatus: 'pending',
+                        paymentMethod: null,
+                        paymentAmount: null,
+                        createdAt: new Date().toISOString()
+                    }
+                ],
+                payments: [],
+                syncMetadata: {
+                    lastSync: null,
+                    syncStatus: 'idle',
+                    pendingChanges: []
+                }
+            };
+            saveLocalData();
+        }
+
+        function initializeApp() {
+            const user = appState.currentUser;
+            if (user) {
+                showAppView();
+            } else {
+                showLoginView();
+            }
+        }
+
+        // ============== AUTHENTICATION ==============
+        function handleLogin(event) {
+            event.preventDefault();
+            const loginInput = document.getElementById('loginInput').value.trim();
+            const password = document.getElementById('passwordInput').value;
+            const errorEl = document.getElementById('loginError');
+
+            const user = appState.users.find(u =>
+                (u.email === loginInput || u.phone === loginInput) &&
+                u.passwordHash === hashPassword(password)
+            );
+
+            if (user) {
+                appState.currentUser = user;
+                saveLocalData();
+                showAppView();
+                showNotification(`Welcome, ${user.name}!`, 'success');
+                errorEl.classList.remove('show');
+            } else {
+                errorEl.textContent = 'Invalid email/phone or password';
+                errorEl.classList.add('show');
+            }
+        }
+
+        function handleLogout() {
+            appState.currentUser = null;
+            saveLocalData();
+            showLoginView();
+            showNotification('Logged out successfully', 'info');
+        }
+
+        function hashPassword(pwd) {
+            // Simple hash for demo (use proper hashing in production)
+            return btoa(pwd);
+        }
+
+        // ============== UI VIEWS ==============
+        function showLoginView() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('appContainer').style.display = 'none';
+        }
+
+        function showAppView() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'flex';
+            document.getElementById('userName').textContent = appState.currentUser.name + ' (' + appState.currentUser.role + ')';
+
+            if (appState.currentUser.role === 'admin') {
+                document.getElementById('adminView').classList.add('active');
+                document.getElementById('driverView').classList.remove('active');
+                renderAdminDashboard();
+                populateDriverSelect();
+            } else {
+                document.getElementById('driverView').classList.add('active');
+                document.getElementById('adminView').classList.remove('active');
+                renderDriverView();
+            }
+        }
+
+        // ============== ADMIN FUNCTIONS ==============
+        function switchAdminTab(tab) {
+            document.querySelectorAll('#adminView .tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.querySelectorAll('#adminView > div:not(.tabs)').forEach(el => el.classList.remove('active'));
+
+            if (tab === 'trips') {
+                document.getElementById('adminTripsTab').classList.add('active');
+                renderAdminDashboard();
+            } else if (tab === 'create') {
+                document.getElementById('adminCreateTab').classList.add('active');
+            } else if (tab === 'reports') {
+                document.getElementById('adminReportsTab').classList.add('active');
+                generateReport();
+            }
+        }
+
+        function renderAdminDashboard() {
+            const stats = {
+                scheduled: appState.trips.filter(t => t.status === 'scheduled').length,
+                started: appState.trips.filter(t => t.status === 'started').length,
+                pickupCompleted: appState.trips.filter(t => t.status === 'pickup-completed').length,
+                inTransit: appState.trips.filter(t => t.status === 'in-transit').length,
+                completed: appState.trips.filter(t => t.status === 'completed').length
+            };
+
+            const statsHTML = `
+                <div style="padding: 12px; background: rgba(70, 130, 180, 0.1); border-radius: 8px;">
+                    <div style="font-size: 20px; font-weight: 600; color: #4682B4;">Scheduled</div>
+                    <div style="font-size: 12px; color: var(--color-text-light);">${stats.scheduled} trips</div>
+                </div>
+                <div style="padding: 12px; background: rgba(245, 158, 11, 0.1); border-radius: 8px;">
+                    <div style="font-size: 20px; font-weight: 600; color: var(--color-warning);">Started</div>
+                    <div style="font-size: 12px; color: var(--color-text-light);">${stats.started} trips</div>
+                </div>
+                <div style="padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 8px;">
+                    <div style="font-size: 20px; font-weight: 600; color: #3B82F6;">Pickup Done</div>
+                    <div style="font-size: 12px; color: var(--color-text-light);">${stats.pickupCompleted} trips</div>
+                </div>
+                <div style="padding: 12px; background: rgba(139, 92, 246, 0.1); border-radius: 8px;">
+                    <div style="font-size: 20px; font-weight: 600; color: #8B5CF6;">In Transit</div>
+                    <div style="font-size: 12px; color: var(--color-text-light);">${stats.inTransit} trips</div>
+                </div>
+                <div style="padding: 12px; background: rgba(34, 197, 94, 0.1); border-radius: 8px;">
+                    <div style="font-size: 20px; font-weight: 600; color: var(--color-success);">Completed</div>
+                    <div style="font-size: 12px; color: var(--color-text-light);">${stats.completed} trips</div>
+                </div>
+            `;
+            document.getElementById('tripStats').innerHTML = statsHTML;
+
+            const tripsHTML = appState.trips.map(trip => `
+                <div class="card trip-card">
+                    <div class="trip-header">
+                        <div class="trip-id">${trip.id}</div>
+                        <div class="trip-status ${getStatusClass(trip.status)}">${formatStatus(trip.status)}</div>
+                    </div>
+                    <div class="trip-info">
+                        <div>
+                            <div style="font-size: 12px; color: var(--color-text-light);">Customer</div>
+                            <div style="font-weight: 500;">${trip.customerName}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: var(--color-text-light);">Driver</div>
+                            <div style="font-weight: 500;">${getDriverName(trip.assignedDriver)}</div>
+                        </div>
+                        <div class="trip-location">
+                            <span class="location-icon">📍</span>
+                            <div class="location-details">
+                                <div class="location-label">Pickup</div>
+                                <div class="location-address">${trip.pickupLocation.address}</div>
+                            </div>
+                        </div>
+                        <div class="trip-location">
+                            <span class="location-icon">🎯</span>
+                            <div class="location-details">
+                                <div class="location-label">Drop</div>
+                                <div class="location-address">${trip.dropLocation.address}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 12px; font-size: 13px;">
+                        <div style="flex: 1; padding: 8px; background: rgba(0,0,0,0.02); border-radius: 6px;">
+                            <div style="color: var(--color-text-light);">Time</div>
+                            <div style="font-weight: 500;">${formatTime(trip.scheduledTime)}</div>
+                        </div>
+                        <div style="flex: 1; padding: 8px; background: rgba(0,0,0,0.02); border-radius: 6px;">
+                            <div style="color: var(--color-text-light);">Payment</div>
+                            <div style="font-weight: 500;">${trip.paymentStatus === 'completed' ? '✓ Done' : '⏳ Pending'}</div>
+                        </div>
+                    </div>
+                    <div class="trip-footer">
+                        <button class="btn btn-secondary" onclick="openTripDetail('${trip.id}')">View Details</button>
+                        ${trip.status === 'scheduled' ? `<button class="btn btn-danger" onclick="cancelTrip('${trip.id}')">Cancel</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('adminTripsList').innerHTML = tripsHTML || '<p style="color: var(--color-text-light);">No trips created yet</p>';
+        }
+
+        function handleCreateTrip(event) {
+            event.preventDefault();
+
+            const trip = {
+                id: 'TRIP' + String(appState.trips.length + 1).padStart(3, '0'),
+                customerName: document.getElementById('customerName').value,
+                customerPhone: document.getElementById('customerPhone').value,
+                pickupLocation: {
+                    lat: parseFloat(document.getElementById('pickupLat').value) || null,
+                    lng: parseFloat(document.getElementById('pickupLng').value) || null,
+                    address: document.getElementById('pickupLocation').value
+                },
+                dropLocation: {
+                    lat: parseFloat(document.getElementById('dropLat').value) || null,
+                    lng: parseFloat(document.getElementById('dropLng').value) || null,
+                    address: document.getElementById('dropLocation').value
+                },
+                scheduledTime: document.getElementById('scheduledTime').value,
+                expectedDistance: document.getElementById('expectedDistance').value || 'N/A',
+                expectedDuration: document.getElementById('expectedDuration').value || 'N/A',
+                assignedDriver: document.getElementById('assignDriver').value,
+                status: 'scheduled',
+                pickupCompletedAt: null,
+                tripStartedAt: null,
+                tripCompletedAt: null,
+                paymentStatus: 'pending',
+                paymentMethod: null,
+                paymentAmount: null,
+                createdAt: new Date().toISOString()
+            };
+
+            appState.trips.push(trip);
+            appState.syncMetadata.pendingChanges.push({ action: 'create_trip', tripId: trip.id, timestamp: new Date().toISOString() });
+            saveLocalData();
+            syncWithGoogleSheets();
+
+            showNotification(`Trip ${trip.id} created successfully!`, 'success');
+            document.getElementById('createTripForm').reset();
+            switchAdminTab('trips');
+            renderAdminDashboard();
+        }
+
+        function populateDriverSelect() {
+            const drivers = appState.users.filter(u => u.role === 'driver');
+            const select = document.getElementById('assignDriver');
+            select.innerHTML = '<option value="">Select Driver</option>' + drivers.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+        }
+
+        function generateReport() {
+            const reportType = document.getElementById('reportType').value;
+            let reportHTML = '';
+
+            if (reportType === 'daily') {
+                const today = new Date().toDateString();
+                const todayTrips = appState.trips.filter(t => new Date(t.createdAt).toDateString() === today);
+                reportHTML = `
+                    <div style="font-size: 14px;">
+                        <h3 style="margin-bottom: 12px;">Daily Report - ${today}</h3>
+                        <p><strong>Total Trips:</strong> ${todayTrips.length}</p>
+                        <p><strong>Completed:</strong> ${todayTrips.filter(t => t.status === 'completed').length}</p>
+                        <p><strong>In Progress:</strong> ${todayTrips.filter(t => ['started', 'pickup-completed', 'in-transit'].includes(t.status)).length}</p>
+                        <p><strong>Pending:</strong> ${todayTrips.filter(t => t.status === 'scheduled').length}</p>
+                        <p><strong>Payments Collected:</strong> ₹${todayTrips.reduce((sum, t) => sum + (t.paymentAmount || 0), 0)}</p>
+                    </div>
+                `;
+            } else if (reportType === 'weekly') {
+                const weekAgo = new Date(Date.now() - 7*24*3600000);
+                const weekTrips = appState.trips.filter(t => new Date(t.createdAt) >= weekAgo);
+                reportHTML = `
+                    <div style="font-size: 14px;">
+                        <h3 style="margin-bottom: 12px;">Weekly Report (Last 7 Days)</h3>
+                        <p><strong>Total Trips:</strong> ${weekTrips.length}</p>
+                        <p><strong>Completed:</strong> ${weekTrips.filter(t => t.status === 'completed').length}</p>
+                        <p><strong>Completion Rate:</strong> ${weekTrips.length > 0 ? Math.round(weekTrips.filter(t => t.status === 'completed').length / weekTrips.length * 100) : 0}%</p>
+                        <p><strong>Total Revenue:</strong> ₹${weekTrips.reduce((sum, t) => sum + (t.paymentAmount || 0), 0)}</p>
+                    </div>
+                `;
+            } else if (reportType === 'driver') {
+                const drivers = appState.users.filter(u => u.role === 'driver');
+                reportHTML = '<div style="font-size: 14px;"><h3 style="margin-bottom: 12px;">Driver Performance</h3>';
+                drivers.forEach(driver => {
+                    const driverTrips = appState.trips.filter(t => t.assignedDriver === driver.id);
+                    reportHTML += `
+                        <div style="margin-bottom: 12px; padding: 8px; background: rgba(0,0,0,0.02); border-radius: 6px;">
+                            <strong>${driver.name}</strong><br>
+                            Total: ${driverTrips.length} | Completed: ${driverTrips.filter(t => t.status === 'completed').length} | Revenue: ₹${driverTrips.reduce((sum, t) => sum + (t.paymentAmount || 0), 0)}
+                        </div>
+                    `;
+                });
+                reportHTML += '</div>';
+            } else if (reportType === 'payment') {
+                const paidTrips = appState.trips.filter(t => t.paymentStatus === 'completed');
+                const pendingPayments = appState.trips.filter(t => t.paymentStatus === 'pending');
+                reportHTML = `
+                    <div style="font-size: 14px;">
+                        <h3 style="margin-bottom: 12px;">Payment Status</h3>
+                        <p><strong>Paid Trips:</strong> ${paidTrips.length}</p>
+                        <p><strong>Pending Payments:</strong> ${pendingPayments.length}</p>
+                        <p><strong>Total Collected:</strong> ₹${paidTrips.reduce((sum, t) => sum + (t.paymentAmount || 0), 0)}</p>
+                        <p><strong>Total Pending:</strong> ₹${pendingPayments.length * 500}</p>
+                    </div>
+                `;
+            }
+
+            document.getElementById('reportOutput').innerHTML = reportHTML;
+        }
+
+        // ============== DRIVER FUNCTIONS ==============
+        function switchDriverTab(tab) {
+            document.querySelectorAll('#driverView .tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.querySelectorAll('#driverView > div:not(.tabs)').forEach(el => el.classList.remove('active'));
+
+            if (tab === 'available') {
+                document.getElementById('driverAvailableTab').classList.add('active');
+                renderDriverTrips();
+            } else if (tab === 'active') {
+                document.getElementById('driverActiveTab').classList.add('active');
+                renderActiveTrip();
+            } else if (tab === 'completed') {
+                document.getElementById('driverCompletedTab').classList.add('active');
+                renderCompletedTrips();
+            }
+        }
+
+        function renderDriverView() {
+            renderDriverTrips();
+        }
+
+        function renderDriverTrips() {
+            const driverId = appState.currentUser.id;
+            const assignedTrips = appState.trips.filter(t => t.assignedDriver === driverId && t.status === 'scheduled');
+
+            const tripsHTML = assignedTrips.map(trip => `
+                <div class="card trip-card">
+                    <div class="trip-header">
+                        <div class="trip-id">${trip.id}</div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <div style="font-size: 12px; color: var(--color-text-light);">Customer</div>
+                        <div style="font-weight: 500; margin-bottom: 8px;">${trip.customerName}</div>
+                        <div style="font-size: 12px; color: var(--color-text-light);">Scheduled Time</div>
+                        <div style="font-weight: 500;">${formatTime(trip.scheduledTime)}</div>
+                    </div>
+                    <div class="trip-location" style="margin-bottom: 12px;">
+                        <span class="location-icon">📍</span>
+                        <div class="location-details">
+                            <div class="location-label">Pickup Location</div>
+                            <div class="location-address">${trip.pickupLocation.address}</div>
+                        </div>
+                    </div>
+                    <div class="trip-footer">
+                        <button class="btn btn-primary" onclick="acceptTrip('${trip.id}')">Accept Trip</button>
+                        <button class="btn btn-secondary" onclick="openGoogleMaps(${trip.pickupLocation.lat}, ${trip.pickupLocation.lng})">Map</button>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('driverTripsList').innerHTML = tripsHTML || '<p style="color: var(--color-text-light); text-align: center; padding: 20px;">No available trips</p>';
+        }
+
+        function acceptTrip(tripId) {
+            const trip = appState.trips.find(t => t.id === tripId);
+            if (trip) {
+                trip.status = 'started';
+                trip.tripStartedAt = new Date().toISOString();
+                appState.syncMetadata.pendingChanges.push({ action: 'update_trip', tripId, timestamp: new Date().toISOString() });
+                saveLocalData();
+                syncWithGoogleSheets();
+                notifyAdmins(`Driver ${appState.currentUser.name} has started trip ${tripId}`);
+                showNotification('Trip started! Safe travels!', 'success');
+                switchDriverTab('active');
+            }
+        }
+
+        function renderActiveTrip() {
+            const driverId = appState.currentUser.id;
+            const activeTrip = appState.trips.find(t => t.assignedDriver === driverId && ['started', 'pickup-completed', 'in-transit'].includes(t.status));
+
+            if (!activeTrip) {
+                document.getElementById('activeTrip').innerHTML = '<p style="color: var(--color-text-light); text-align: center; padding: 20px;">No active trip</p>';
+                return;
+            }
+
+            let tripStatus = '';
+            if (activeTrip.status === 'started') {
+                tripStatus = `
+                    <div class="trip-footer">
+                        <button class="btn btn-success" onclick="markPickupCompleted('${activeTrip.id}')">✓ Pickup Completed</button>
+                        <button class="btn btn-secondary" onclick="openGoogleMaps(${activeTrip.pickupLocation.lat}, ${activeTrip.pickupLocation.lng})">Navigate to Pickup</button>
+                    </div>
+                `;
+            } else if (activeTrip.status === 'pickup-completed') {
+                tripStatus = `
+                    <div class="trip-footer">
+                        <button class="btn btn-success" onclick="markDeliveryStart('${activeTrip.id}')">Start Delivery</button>
+                        <button class="btn btn-secondary" onclick="openGoogleMaps(${activeTrip.dropLocation.lat}, ${activeTrip.dropLocation.lng})">Navigate to Drop</button>
+                    </div>
+                `;
+            } else if (activeTrip.status === 'in-transit') {
+                tripStatus = `
+                    <div class="trip-footer">
+                        <button class="btn btn-success" onclick="markTripCompleted('${activeTrip.id}')">✓ Trip Completed</button>
+                        <button class="btn btn-secondary" onclick="openGoogleMaps(${activeTrip.dropLocation.lat}, ${activeTrip.dropLocation.lng})">Navigate to Drop</button>
+                    </div>
+                `;
+            }
+
+            const timeline = `
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot ${activeTrip.tripStartedAt ? 'completed' : activeTrip.status === 'started' ? 'active' : ''}"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-label">Trip Started</div>
+                            <div class="timeline-time">${activeTrip.tripStartedAt ? formatTime(activeTrip.tripStartedAt) : 'Not started'}</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot ${activeTrip.pickupCompletedAt ? 'completed' : activeTrip.status === 'pickup-completed' || activeTrip.status === 'in-transit' ? 'active' : ''}"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-label">Pickup Completed</div>
+                            <div class="timeline-time">${activeTrip.pickupCompletedAt ? formatTime(activeTrip.pickupCompletedAt) : 'Pending'}</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot ${activeTrip.tripCompletedAt ? 'completed' : activeTrip.status === 'in-transit' ? 'active' : ''}"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-label">Delivery Completed</div>
+                            <div class="timeline-time">${activeTrip.tripCompletedAt ? formatTime(activeTrip.tripCompletedAt) : 'Pending'}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const html = `
+                <div class="trip-header">
+                    <div class="trip-id">${activeTrip.id}</div>
+                    <div class="trip-status ${getStatusClass(activeTrip.status)}">${formatStatus(activeTrip.status)}</div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <div style="font-size: 12px; color: var(--color-text-light);">Customer</div>
+                    <div style="font-weight: 500; margin-bottom: 8px;">${activeTrip.customerName}</div>
+                    <div style="font-size: 12px; color: var(--color-text-light);">Contact</div>
+                    <div style="font-weight: 500;">${activeTrip.customerPhone}</div>
+                </div>
+                <div class="trip-location" style="margin-bottom: 12px;">
+                    <span class="location-icon">📍</span>
+                    <div class="location-details">
+                        <div class="location-label">Pickup Location</div>
+                        <div class="location-address">${activeTrip.pickupLocation.address}</div>
+                    </div>
+                </div>
+                <div class="trip-location" style="margin-bottom: 12px;">
+                    <span class="location-icon">🎯</span>
+                    <div class="location-details">
+                        <div class="location-label">Drop Location</div>
+                        <div class="location-address">${activeTrip.dropLocation.address}</div>
+                    </div>
+                </div>
+                ${timeline}
+                ${tripStatus}
+            `;
+
+            document.getElementById('activeTrip').innerHTML = html;
+        }
+
+        function markPickupCompleted(tripId) {
+            const trip = appState.trips.find(t => t.id === tripId);
+            if (trip) {
+                trip.status = 'pickup-completed';
+                trip.pickupCompletedAt = new Date().toISOString();
+                appState.syncMetadata.pendingChanges.push({ action: 'update_trip', tripId, timestamp: new Date().toISOString() });
+                saveLocalData();
+                syncWithGoogleSheets();
+                notifyAdmins(`Pickup completed for trip ${tripId}`);
+                showNotification('Pickup confirmed! Start delivery.', 'success');
+                renderActiveTrip();
+            }
+        }
+
+        function markDeliveryStart(tripId) {
+            const trip = appState.trips.find(t => t.id === tripId);
+            if (trip) {
+                trip.status = 'in-transit';
+                appState.syncMetadata.pendingChanges.push({ action: 'update_trip', tripId, timestamp: new Date().toISOString() });
+                saveLocalData();
+                syncWithGoogleSheets();
+                notifyAdmins(`Delivery started for trip ${tripId}`);
+                showNotification('Delivery in progress...', 'success');
+                renderActiveTrip();
+            }
+        }
+
+        function markTripCompleted(tripId) {
+            const trip = appState.trips.find(t => t.id === tripId);
+            if (trip) {
+                trip.status = 'completed';
+                trip.tripCompletedAt = new Date().toISOString();
+                appState.syncMetadata.pendingChanges.push({ action: 'update_trip', tripId, timestamp: new Date().toISOString() });
+                saveLocalData();
+                syncWithGoogleSheets();
+                notifyAdmins(`Trip ${tripId} completed. Awaiting payment.`);
+                showNotification('Trip completed! Please record payment.', 'success');
+                openPaymentModal(tripId);
+            }
+        }
+
+        function renderCompletedTrips() {
+            const driverId = appState.currentUser.id;
+            const completedTrips = appState.trips.filter(t => t.assignedDriver === driverId && t.status === 'completed');
+
+            const tripsHTML = completedTrips.map(trip => `
+                <div class="card trip-card">
+                    <div class="trip-header">
+                        <div class="trip-id">${trip.id}</div>
+                        <div class="trip-status status-completed">Completed</div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <div style="font-size: 12px; color: var(--color-text-light);">Customer</div>
+                        <div style="font-weight: 500; margin-bottom: 8px;">${trip.customerName}</div>
+                        <div style="font-size: 12px; color: var(--color-text-light);">Completed at</div>
+                        <div style="font-weight: 500;">${formatTime(trip.tripCompletedAt)}</div>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 12px; font-size: 13px;">
+                        <div style="flex: 1; padding: 8px; background: rgba(0,0,0,0.02); border-radius: 6px;">
+                            <div style="color: var(--color-text-light);">Payment</div>
+                            <div style="font-weight: 500;">${trip.paymentStatus === 'completed' ? '✓ Done' : '⏳ Pending'}</div>
+                        </div>
+                        ${trip.paymentAmount ? `
+                        <div style="flex: 1; padding: 8px; background: rgba(0,0,0,0.02); border-radius: 6px;">
+                            <div style="color: var(--color-text-light);">Amount</div>
+                            <div style="font-weight: 500;">₹${trip.paymentAmount}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('driverCompletedList').innerHTML = tripsHTML || '<p style="color: var(--color-text-light); text-align: center; padding: 20px;">No completed trips</p>';
+        }
+
+        // ============== PAYMENT FUNCTIONS ==============
+        function openPaymentModal(tripId) {
+            document.getElementById('paymentModal').classList.add('active');
+            document.getElementById('paymentForm').dataset.tripId = tripId;
+            resetPaymentForm();
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+            resetPaymentForm();
+        }
+
+        function resetPaymentForm() {
+            document.getElementById('paymentForm').reset();
+            document.getElementById('cashFields').classList.add('hidden');
+            document.getElementById('upiFields').classList.add('hidden');
+            document.getElementById('imagePreview').innerHTML = '';
+        }
+
+        function updatePaymentFields() {
+            const method = document.getElementById('paymentMethod').value;
+            document.getElementById('cashFields').classList.toggle('hidden', method !== 'cash');
+            document.getElementById('upiFields').classList.toggle('hidden', method !== 'upi');
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const preview = document.getElementById('imagePreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Payment proof">`;
+                    document.getElementById('paymentForm').dataset.imageData = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handlePaymentSubmit(event) {
+            event.preventDefault();
+            const tripId = document.getElementById('paymentForm').dataset.tripId;
+            const method = document.getElementById('paymentMethod').value;
+            const trip = appState.trips.find(t => t.id === tripId);
+
+            if (!trip) return;
+
+            let paymentData = {
+                tripId,
+                method,
+                timestamp: new Date().toISOString(),
+                notes: document.getElementById('paymentNotes').value
+            };
+
+            if (method === 'cash') {
+                paymentData.amount = parseFloat(document.getElementById('cashAmount').value);
+            } else if (method === 'upi') {
+                paymentData.amount = parseFloat(document.getElementById('upiAmount').value);
+                paymentData.transactionId = document.getElementById('upiTransactionId').value;
+                paymentData.proof = document.getElementById('paymentForm').dataset.imageData;
+            }
+
+            trip.paymentStatus = 'completed';
+            trip.paymentMethod = method;
+            trip.paymentAmount = paymentData.amount;
+
+            appState.payments.push(paymentData);
+            appState.syncMetadata.pendingChanges.push({ action: 'payment_recorded', tripId, timestamp: new Date().toISOString() });
+            saveLocalData();
+            syncWithGoogleSheets();
+
+            notifyAdmins(`Payment received for trip ${tripId}: ₹${paymentData.amount} via ${method.toUpperCase()}`);
+            showNotification('Payment recorded successfully!', 'success');
+            closePaymentModal();
+            renderCompletedTrips();
+        }
+
+        // ============== TRIP DETAIL MODAL ==============
+        function openTripDetail(tripId) {
+            const trip = appState.trips.find(t => t.id === tripId);
+            if (!trip) return;
+
+            const paymentInfo = trip.paymentStatus === 'completed'
+                ? `<div style="margin-top: 12px; padding: 12px; background: rgba(34, 197, 94, 0.1); border-radius: 6px;">
+                     <strong>Payment:</strong> ₹${trip.paymentAmount} via ${trip.paymentMethod.toUpperCase()}
+                   </div>`
+                : '';
+
+            const html = `
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <div style="font-size: 12px; color: var(--color-text-light);">Trip ID</div>
+                            <div style="font-weight: 600; font-size: 15px;">${trip.id}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: var(--color-text-light);">Status</div>
+                            <div style="font-weight: 600; font-size: 15px;">${formatStatus(trip.status)}</div>
+                        </div>
+                    </div>
+
+                    <div style="padding: 12px; background: rgba(0,0,0,0.02); border-radius: 6px;">
+                        <div style="font-size: 12px; color: var(--color-text-light); margin-bottom: 4px;">Customer</div>
+                        <div style="font-weight: 500;">${trip.customerName}</div>
+                        <div style="font-size: 12px; color: var(--color-text-light); margin-top: 4px;">${trip.customerPhone}</div>
+                    </div>
+
+                    <div style="padding: 12px; background: rgba(0,0,0,0.02); border-radius: 6px;">
+                        <div style="font-size: 12px; color: var(--color-text-light); margin-bottom: 4px;">📍 Pickup</div>
+                        <div style="font-weight: 500;">${trip.pickupLocation.address}</div>
+                        ${trip.pickupLocation.lat ? `<div style="font-size: 12px; color: var(--color-text-light);">${trip.pickupLocation.lat.toFixed(4)}, ${trip.pickupLocation.lng.toFixed(4)}</div>` : ''}
+                    </div>
+
+                    <div style="padding: 12px; background: rgba(0,0,0,0.02); border-radius: 6px;">
+                        <div style="font-size: 12px; color: var(--color-text-light); margin-bottom: 4px;">🎯 Drop</div>
+                        <div style="font-weight: 500;">${trip.dropLocation.address}</div>
+                        ${trip.dropLocation.lat ? `<div style="font-size: 12px; color: var(--color-text-light);">${trip.dropLocation.lat.toFixed(4)}, ${trip.dropLocation.lng.toFixed(4)}</div>` : ''}
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div style="padding: 12px; background: rgba(0,0,0,0.02); border-radius: 6px;">
+                            <div style="font-size: 12px; color: var(--color-text-light);">Scheduled</div>
+                            <div style="font-weight: 500;">${formatTime(trip.scheduledTime)}</div>
+                        </div>
+                        <div style="padding: 12px; background: rgba(0,0,0,0.02); border-radius: 6px;">
+                            <div style="font-size: 12px; color: var(--color-text-light);">Duration</div>
+                            <div style="font-weight: 500;">${trip.expectedDuration}</div>
+                        </div>
+                    </div>
+
+                    ${paymentInfo}
+                </div>
+            `;
+
+            document.getElementById('tripDetailContent').innerHTML = html;
+            document.getElementById('tripDetailModal').classList.add('active');
+        }
+
+        function closeTripDetailModal() {
+            document.getElementById('tripDetailModal').classList.remove('active');
+        }
+
+        function cancelTrip(tripId) {
+            if (confirm('Are you sure you want to cancel this trip?')) {
+                const trip = appState.trips.find(t => t.id === tripId);
+                if (trip) {
+                    trip.status = 'cancelled';
+                    appState.syncMetadata.pendingChanges.push({ action: 'cancel_trip', tripId, timestamp: new Date().toISOString() });
+                    saveLocalData();
+                    syncWithGoogleSheets();
+                    showNotification('Trip cancelled', 'info');
+                    renderAdminDashboard();
+                }
+            }
+        }
+
+        // ============== UTILITY FUNCTIONS ==============
+        function getStatusClass(status) {
+            const classes = {
+                'scheduled': 'status-scheduled',
+                'started': 'status-started',
+                'pickup-completed': 'status-pickup-completed',
+                'in-transit': 'status-in-transit',
+                'completed': 'status-completed'
+            };
+            return classes[status] || '';
+        }
+
+        function formatStatus(status) {
+            const labels = {
+                'scheduled': 'Scheduled',
+                'started': 'Started',
+                'pickup-completed': 'Pickup Done',
+                'in-transit': 'In Transit',
+                'completed': 'Completed',
+                'cancelled': 'Cancelled'
+            };
+            return labels[status] || status;
+        }
+
+        function formatTime(isoString) {
+            if (!isoString) return 'N/A';
+            const date = new Date(isoString);
+            return date.toLocaleDateString('en-IN') + ' ' + date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function getDriverName(driverId) {
+            const driver = appState.users.find(u => u.id === driverId);
+            return driver ? driver.name : 'Unknown';
+        }
+
+        function openGoogleMaps(lat, lng) {
+            if (lat && lng) {
+                const url = `https://maps.google.com/?q=${lat},${lng}`;
+                window.open(url, '_blank');
+            } else {
+                showNotification('Location not available', 'error');
+            }
+        }
+
+        // ============== LOCAL STORAGE & SYNC ==============
+        function saveLocalData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        }
+
+        function setupOfflineSync() {
+            // Sync every 10 seconds when online
+            setInterval(() => {
+                if (navigator.onLine && appState.syncMetadata.pendingChanges.length > 0) {
+                    syncWithGoogleSheets();
+                }
+            }, 10000);
+
+            // Listen for online/offline events
+            window.addEventListener('online', () => {
+                updateSyncIndicator(true);
+                syncWithGoogleSheets();
+            });
+
+            window.addEventListener('offline', () => {
+                updateSyncIndicator(false);
+            });
+
+            updateSyncIndicator(navigator.onLine);
+        }
+
+        function syncWithGoogleSheets() {
+            if (!navigator.onLine) return;
+
+            appState.syncMetadata.syncStatus = 'syncing';
+            updateSyncIndicator(false);
+
+            // Simulate API call to Google Apps Script
+            // In production, use: fetch(GOOGLE_APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(appState.syncMetadata.pendingChanges) })
+
+            setTimeout(() => {
+                appState.syncMetadata.lastSync = new Date().toISOString();
+                appState.syncMetadata.syncStatus = 'idle';
+                appState.syncMetadata.pendingChanges = [];
+                saveLocalData();
+                updateSyncIndicator(true);
+                console.log('✓ Synced with Google Sheets');
+            }, 1000);
+        }
+
+        function updateSyncIndicator(isOnline) {
+            const indicator = document.getElementById('syncIndicator');
+            if (!indicator) return;
+
+            if (appState.syncMetadata.syncStatus === 'syncing') {
+                indicator.classList.add('syncing');
+            } else {
+                indicator.classList.remove('syncing');
+                indicator.style.background = isOnline ? 'var(--color-success)' : 'var(--color-error)';
+            }
+        }
+
+        function notifyAdmins(message) {
+            // Store notification in app state
+            if (!appState.notifications) appState.notifications = [];
+            appState.notifications.push({
+                message,
+                timestamp: new Date().toISOString(),
+                read: false
+            });
+
+            // In production: Send via Firebase Cloud Messaging or browser Push Notification API
+            console.log('[ADMIN NOTIFICATION]', message);
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-in forwards';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // ============== EDGE CASE HANDLING ==============
+        window.addEventListener('beforeunload', () => {
+            saveLocalData();
+        });
+
+        // Handle network timeouts
+        document.addEventListener('DOMContentLoaded', () => {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
+            }
+        });
+
+        // Validate form inputs
+        document.getElementById('customerPhone')?.addEventListener('blur', function() {
+            if (this.value && !/^\d{10}$/.test(this.value.replace(/\D/g, ''))) {
+                showNotification('Enter a valid 10-digit phone number', 'error');
+            }
+        });
+
+        // Auto-login with stored session
+        window.addEventListener('load', () => {
+            if (appState.currentUser && document.getElementById('loginScreen').style.display === 'flex') {
+                showAppView();
+            }
+        });
+    </script>
+</body>
+</html>
